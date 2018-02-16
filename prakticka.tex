@@ -1,0 +1,94 @@
+\chapter{Praktická část}
+Some introductory text\dots
+
+\section{Software}
+\subsection{openFramworks}
+OpenfFrameworks ~\cite{1} je open source C++ nástroj pro kreativní programování.\\
+Využívá se doplněk ofxKinectV2~\cite{2}. Oproti zabudovanému  je optimalizovaný pro aktuální openFrameworks (verze 0.9.0), je stabilnější, rychlejší a podporuje pro případné potřeby i více kamer.
+
+Kód v openFrameworks se dělí do třech hlavních částí. Jedná se o setup(), update() a draw(). Sekce setup slouží pro počáteční nastavení programu, proměnných apod., update obsahuje výpočetní a aktualizační část a draw má na starosti vykreslování.
+
+Program se snaží vykonávat všechny části tak často, jak jen může. V update i draw se může využít funkce ofGetTimef(), která vrací vteřiny v jednotkách float od spuštění programu. Za využití modulo funkce (i jiných) můžeme ovlivnit jak často se bude vykonávat každá aktualizační část nebo její podčást.
+
+\section{Zpracovatelné vstupy}
+
+Kinect má dvě kamery, které poskytují pro účely projektu užitečné informace. Minimální vzdálenost pro správné měření je 0.5 m a maximální 4.5 m. Při větší vzdálenosti bude Kinect stále ještě detekovat věci v zorném poli, ale bude poskytovat nepřesná data a hloubková kamera pozbydu užitku. Velký vliv má i rozlišení, které je pro velké vzdálenosti nedostačující. V dálce 5 m od kamery je rozlišení 7 cm.
+
+Hloubková kamera poskytuje pole s hodnotami 0 až 255 dle vzorce pro výpočet vzdálenosti na základě doby letu infračerveného světla.
+
+Stupnice hodnot je klesající, to jest nejbližší objekty mají hodnotu 255(při experimentálních pokusech spíš 254). Ve vzdálenosti 3 metry hodnoty klesnou na 200. 
+
+UPŘESNIT A ZKONTROLOVAT JEŠTĚ NĚKOLIKRÁT
+
+RGB kamera nabízí pole pixelů, kde každý má složky RGB (0 až 255). Dalo by se využít v kombinaci s robustním programem, který by na základě barvy, tvarů a dalších vylučovacích prvků správně detekoval nejdříve ruku a poté i gesta. Jedná se o znatelně náročnější způsob.\\\\
+Odvoditelné parametry:\\
+\begin{itemize}
+\item Vzdálenost od kamery\\
+\item Vzdálenost mezi body\\
+\item Úhly\\
+\end{itemize}
+
+\subsection{Depth video}
+Doporučený postup by měl sestávat ze čtyř částí:
+
+\subsubsection{Úvodní nastavení}
+Lze zde dát uživateli na vědomí podmínky interakce s kamerou. Například pozice ruky musí být v prostřední třetině. Alternativou může být počáteční umístění ruky doprostřed kamery, aby mohla dále vycházet z umístění za využívání historie nebo aby se zkrátila doba hledání ruky.
+
+\subsubsection{Nalezení ruky}
+Prostor pro určení podmínek a způsobu vyhledávání ruky. Tato část rozhoduje o robustnosti kódu a využitelnosti aplikace. Je vhodné nejdříve odstranit nulové a jinak nevyhovující pixely, vyplnit díry v obraze a počítat s dalšími chybami hardwaru i vlivy okolí. Pokud má být aplikace využívaná v jakkoliv náročnějším okolí, musí obsahovat i vyloučení veškerých nevyhovujícíh objektů, jako jsou věci podobného tvaru či případně cizí ruce.
+
+\subsubsection{Identifikace gesta}
+Je vhodno prodiskutovat, jednotlivá gesta s jejich potenciálními uživateli, a rozhodnout se mezi dynamickými a statickými gesty. Případně by obě možnosti šly kombinovat, ale byl by to nejspíše zbytečně náročný postup. Pro gesta dynamivká je potřeba udržovat si v paměti minulé stavy a stanovit dobu, pro kterou by to bylo přijatelné pro uživatele a zároveň to nemohlo být zaměnitelné nebo mylně identifikované. Nejjednodušší je identifikovat gesta statická, kde s využitím souřadnic lze vypočítat počet prstů, a tak v nejzákladnější implementaci bude prostor pro minimálně pět variant, pokud se vyloučí zavřená pěst pro zjednodušení. V momentě, kdy bude program podporovat identifikaci jednotlivých prstů od sebe, je k dispozici variant hned více, než by kdy bylo třeba nebo bybylo zapamatovatelné pro uživatele.
+
+\subsubsection{Vykreslení ruky}
+Objekty se přes video vykreslují pomocí FBO ("frame buffer object"). Jedná se o buffery s objekty, které je třeba vykreslit. Reprezentuje to plátno, na které se pomocí pomocí příkazů 'begin()' a 'end()' vykreslují 3D objekty a jednou za snímek či méně často (podle požadavků) se vykreslí pomocí příkazu 'draw()'. Pro lepší přehled se můžou jednotlivé prsty zvýraznit koulí, zatímco celá ruka krychlí. Vykreslení po obvodu se může zdát být zbytečným, jelikož by to vyžadovalo udržovat si v paměti celou množinu bodů po obvodu oproti jedinému bodu v případě jednotlivého objektu, který představuje celou ruku. 
+
+\subsubsection{Nalezení ruky}
+Předpoklad pro následující text je zpracování videa ohledně nulových pixelů. Měly by být ignorovány v rámci chybného vstupu. Zároveň platí, že čím více podmínek se uživateli na začátku předloží, tím jednodušší je nalezení ruky. 
+
+U správně ukazovaného gesta se dá předpokládat stejná vzdálenost jednotlivých bodů od kamery. Mírné odchylky se dají buď zahrnout offsetem nebo vyloučit úplně, jelikož se dá předpokládat, že to nebude mít vliv na zpracování, pokud se jedná o krajní body.
+
+Pokud by se vycházelo z předem definované vzdálenosti, šlo by nalézt největší možný čtverec, který by představoval dlaň. Pro účely nalezení by muselo existovat pole pixelů, které by reprezentovalo dlaň, či případně podobný objekt, který by se následně vyloučil podle dalších kritérií. Nadále by byla dlaň definovaná středem nalezeného čtverce a šířkou.
+
+Následuje vylučování mylných objektů podle toho, jak robustní program má být.
+
+U ruky se dá předpokládat, že obsahuje prsty, které mají proporcionálně ke dlani určitou velikost a vzdálenost od středu dlaně. Jelikož známe střed nalezené dlaně, lze identifikovat i prsty. Ze začátku musí být známo jaké gesto bude ruka zobrazovat při inicializaci, aby se dala nalézt. Pro ilustraci bude rozebráno gesto se všemi prsty nataženými. 
+
+Nejjednodušší metodou by bylo nalezení lokálních maxim po šíři dlaně. Když se dlaň rozdělí na čtyři části a v každé se nalezne maximum po ose y, pro každý prst se změří vzdálenost špičky prstu od středu dlaně. Pokud se bude výrazně odchylovat od proporcí běžné ruky, bude nalezený objekt vyloučen.
+
+Promyšlenější programy využívají tvorbu skeletonu pro sledování a identifikaci jak postavy, tak i ruky. Jedná se o postup nalezení kloubů a jejich spojení, což pak reprezentuje ruku. Jedná se o možný, ale mírně náročnější a zdlouhavější postup.
+
+
+\subsubsection{Identifikace gesta}
+Z předpokladů uvedených výše lze vypočítat počet prstů, což je nejjednodušší způsob identifikace gesta. Pro přesnost se lze opřít i o úhly a vzdálenosti mezi středem dlaně a špičkami prstů podle vzorců.\\
+REFERENCE na teoretickou část \\
+Nejjistější by bylo procházet blok, který obsahuje ruku a nalézt počet prstů z ní vyčnívající. Jedná se ale o časově náročnější postup.
+
+Sledování gesta může také probíhat pomocí ukládání historie. Za předpokladu, že se člověk hýbe pomaleji, než se střídají snímky k analýze, by se dala procházet menší část pole, například jen offset v okolí místa, kde se posledně nacházela ruka s prsty a kontrolovalo se, zda počet ukázaných prstů se zmenšil nebo zvětšil. K tomuto účelu by stále stačilo gesto definované počtem prstů bez závislosti na tom, o které se jedná.
+
+Otázkou je i jaký objekt má představovat gesto. Jedná-li se o číslo, je to nejjednodušší. Může to být ale i objekt, který obsahuje pět prstů, z nichž každý může být zvednutý nebo nikoliv. Pak je podstatně přehlednější implementace více než pěti gest. Identifikace je ale náročnější, jelikož každý nalezený prst se musí nejdříve identifikovat, poté aktualizovat objekt představující ruku před kamerou a porovnat s implementovanými gesty. 
+
+\section{Omezení}
+
+\subsection{Časová náročnost}
+Kamery, ze kterých lze data využít k potřebám aplikace jsou RGB kamera s rozlišením 1920 x 1080 pixelů a kamera na snímání hloubky s rozlišením 512 x 424 pixelů. Dále jsou uvedena data pro hloubkovou kameru.
+
+Iterace samotným polem dvěma for cykly trvá zanedbatelných 0.8 ms, ale pokud při procházení načítáme hodnotu pixelu z kamery, časová náročnost je průměrně 5.8 s. Jelikož tato doba zpracování jediného snímku je nevhodná pro účely interakce s člověkem, musí se doba zkrátit.
+
+Nejjednodušší, ale limitující způsob je procházet pouze prostřední třetinu, jelikož se tím zkrátí doba zpracování jednoho snímku na průměrných 0.65 s. Jelikož ani to není nikterak zázračný čas a často může být nedostatečný, je tento problém potřeba vyřešit.
+
+Nabízí se několik možností jak ovlivnit periodu výpočtů, ale vzhledem k časové náročnosti čtení pixelů z videa se nejedá o řešení tohoto problému.
+
+Program se snaží vykonávat všechny tři části tak často, jak může. Výpočetní analýzu můžeme provádět jednou za určitý čas. Aby to uživatel nezaznamenal, muselo by se jednat o desítky milisekund. V update i draw se může využít funkce ofGetElapsedTimef(), která vrací vteřiny v jednotkách float od spuštění programu nebo ofGetElapsedTimeMilis(), která vrací milisekudny od resetování čítače. Využitím modulo (i jiných) můžeme ovlivnit jak často se bude vykonávat každá aktualizační část.
+
+Další způsob daného řešení je zpracovávat pouze některé snímky. Aplikace obsahuje funkci isFrameNew(), která vrací boolean a zjišťuje, jestli se snímek změnil či ne.
+% %\subsection{Měření času v OF}
+%timeStart = ofGetElapsedTimef();
+%	/*kód*/
+%timeEnd = ofGetElapsedTimef();
+% %diffTime = timeEnd - timeStart;
+
+
+\endinput
+%%
+%% End of file `ch01.tex'.
