@@ -2,7 +2,46 @@
 %Some introductory text\dots
 
 \section{Stávající metody}
+\subsection{Předzpracování}
+\subsubsection{Binární obraz}
 Většina metod se zakládá na zpracování binárního obrazu. Probíhá to zvolením prahové hodnoty, se kterou se všechny hodnoty porovnají a ve výsledku vznikne binární obraz. Objekt, který je středem zájmu, se skládá z pixelů s hodnotou 1 zatímco ostatní mají hodnotu 0.
+\subsubsection{Rozostření}
+Rozostření slouží jako relativně spolehlivá eliminace šumu v obraze. Nejosvědčenější metody jsou pomocí Gausse nebo mediánu.\\
+
+Filtr medián se zaměřuje na vyhlazování lokálních extrémů z obrazu. Nejprve se seřadí všechny hodnoty z aktuální konvoluční matice a vybere hodnotu, která leží uprostřed seřazeného pole a tou nahradí zpracovávaný bod. Velikost okolí zahrnutého v analýze se může zvětšit při větší hustotě šumu~\cite{15}. Ale v aplikaci na hloubkový obraz, ve kterém se detekují prsty je důležité zachovat určité rozlišení.\\
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\linewidth]{median.jpg}
+\caption{a) původní obraz b) průměrování c) medián
+Rozdíl mezi filtrem s průměrováním a mediánem 
+~\cite{15} }
+\end{figure}
+
+
+Gaussův filtr je průměrování s Gaussovským rozložením~\cite{15}. Využívá se k vyhlazování obrazu a odstranění detailů a šumu. 
+\begin{eqnarray}
+G(x,y) = \frac{1}{2 \pi \sigma^{2}}*e^{-\frac{x^{2}+y^{2}}{2\sigma^{2}}}
+%ae^{-\frac{(x-b)^{2}}{2c^{2}}}
+\end{eqnarray}
+
+Proti rozšíření do nekonečna se v konvoluční masce přidělí větší váha bodu ve středu. Aby se aplikací konvoluční masky neměnila světlost, součet všech složek konvoluční matice dává hodnotu 1. Příklad konvoluční masky:
+\begin{eqnarray}
+\frac{1}{16} \begin{bmatrix}
+1 & 2 & 1 \\
+2 & 4 & 2 \\
+1 & 2 & 1
+\end{bmatrix}
+\end{eqnarray} 
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\linewidth]{gauss.jpg}
+\caption{a) původní obraz b) jednou aplikovaný Gaussův filtr c) třikrát aplikovaný Gaussův filtr~\cite{15} }
+\end{figure}
+
+
+
+
 
 \subsection{Rozpoznávání postav}
 Možnosti:
