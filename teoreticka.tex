@@ -1,4 +1,4 @@
-\chapter{Teoretická část}
+\textit{}\chapter{Teoretická část}
 %Some introductory text\dots
 
 \section{Stávající metody}
@@ -6,9 +6,9 @@
 \subsubsection{Binární obraz}
 Většina metod se zakládá na zpracování binárního obrazu. Probíhá to zvolením prahové hodnoty, se kterou se všechny hodnoty porovnají a ve výsledku vznikne binární obraz. Objekt, který je středem zájmu, se skládá z pixelů s hodnotou 1 zatímco ostatní mají hodnotu 0.
 \subsubsection{Rozostření}
-Rozostření slouží jako relativně spolehlivá eliminace šumu v obraze. Nejosvědčenější metody jsou pomocí Gausse nebo mediánu.\\
+Rozostření slouží jako relativně spolehlivá eliminace šumu v obraze. Nejosvědčenější metody jsou nízkofrekvenční filtry jako je Gauss a medián. Tato kapitola čerpá z Pikoly~\cite{15} kapitoly 5 a 6.\\
 
-Filtr medián se zaměřuje na vyhlazování lokálních extrémů z obrazu. Nejprve se seřadí všechny hodnoty z aktuální konvoluční matice a vybere hodnotu, která leží uprostřed seřazeného pole a tou nahradí zpracovávaný bod. Velikost okolí zahrnutého v analýze se může zvětšit při větší hustotě šumu~\cite{15}. Ale v aplikaci na hloubkový obraz, ve kterém se detekují prsty je důležité zachovat určité rozlišení.\\
+Filtr medián se zaměřuje na vyhlazování lokálních extrémů z obrazu. Nejprve se seřadí všechny hodnoty z aktuální konvoluční matice a vybere hodnotu, která leží uprostřed seřazeného pole a tou nahradí zpracovávaný bod. Velikost okolí zahrnutého v analýze se může zvětšit při větší hustotě šumu. Ale v aplikaci na hloubkový obraz, ve kterém se detekují prsty je důležité zachovat určité rozlišení.\\
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.8\linewidth]{median.jpg}
@@ -18,11 +18,12 @@ Rozdíl mezi filtrem s průměrováním a mediánem
 \end{figure}
 
 
-Gaussův filtr je průměrování s Gaussovským rozložením~\cite{15}. Využívá se k vyhlazování obrazu a odstranění detailů a šumu. 
+Gaussův filtr je průměrování s Gaussovským rozložením. Využívá se k vyhlazování obrazu a odstranění detailů a šumu. 
 \begin{eqnarray}
-G(x,y) = \frac{1}{2 \pi \sigma^{2}}*e^{-\frac{x^{2}+y^{2}}{2\sigma^{2}}}
+G(x,y) = \frac{1}{2 \pi \sigma^{2}}*e^{-\frac{x^{2}+y^{2}}{2\sigma^{2}}}  ,
 %ae^{-\frac{(x-b)^{2}}{2c^{2}}}
 \end{eqnarray}
+kde x a y jsou souřadnice a $ \sigma $ je směrodatná odchylka.\\
 
 Proti rozšíření do nekonečna se v konvoluční masce přidělí větší váha bodu ve středu. Aby se aplikací konvoluční masky neměnila světlost, součet všech složek konvoluční matice dává hodnotu 1. Příklad konvoluční masky:
 \begin{eqnarray}
@@ -39,7 +40,18 @@ Proti rozšíření do nekonečna se v konvoluční masce přidělí větší v�
 \caption{a) původní obraz b) jednou aplikovaný Gaussův filtr c) třikrát aplikovaný Gaussův filtr~\cite{15} }
 \end{figure}
 
-
+Mezi vysokofrekvenční filtry, které se používají na zpracování digitálního obrazu patří i Laplaceův filtr. Ve výpočtu se užívá gradient, což je vektorová veličina určující směr a strmost největšího růstu funkce. Laplaceův filtr využívá pouze velikost a pro její odhad se používá všesměrný operátor vycházející s parciálních derivací.
+\begin{eqnarray}
+\nabla^{2}g(x,y) = \frac{\delta^{2}g(x,y)}{\delta x^{2}} + \frac{\delta^{2}g(x,y)}{\delta y^{2}}
+\end{eqnarray} 
+Laplacián je aproximován diskrétní konvolucí. Příklad konvolučního jádra:
+\begin{eqnarray}
+\begin{bmatrix}
+0 & 1 & 0 \\
+1 & -4 & 1 \\
+0 & 1 & 0
+\end{bmatrix}
+\end{eqnarray} 
 
 
 \subsection{Rozpoznávání postav}
@@ -48,6 +60,8 @@ Možnosti:
 podle tvaru
 \begin{itemize}
 \item na základě modelu
+
+
 \item na základě prvků
 
 \item strojově naučené programy
@@ -66,7 +80,7 @@ Jednou z metod je dle Ch. Nakajima a spol.~\cite{6} ukládání několika obráz
 Hussein a spol.~\cite{9}používají k rozpoznání postavy prohledávání obrazu a porovnávání siluet s databází, ve které jsou vzory lidských postav. Shoda je detekována pomocí zkosením objektů. Vzory jsou ve formě binárního obrazu. Vzdálenost D mezi vzorem V a objektem z obrazu O se počítá vzorcem\\
 
 \begin{eqnarray}
- D(O,V) = \frac{1}{|V|}\sum_{i}^{}C_{i}V_{i} ,
+ D(O,V) = \frac{1}{|V|}\sum_{i}^{}C_{i}V_{i}   ,
 \end{eqnarray}
 
 kde |V| je počet pixelů v siluetě ve vzoru, $ T_{i} $ je hodnota pixelu $ i $ ve vzoru a $ C_{i} $ je rozdíl zkosení pixelu $ i $ v obraze. Čím menší hodnota mezi vzorem a obrazem, tím lepší shoda je detekována.
