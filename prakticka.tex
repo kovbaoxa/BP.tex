@@ -1,6 +1,8 @@
 \chapter{Praktická část}
 Some introductory text\dots
 
+AŽ DO KAPITOLY PŘEDZPRACOVÁNÍ JE TO PŘEVZATO Z IND ZPRÁVY A BUDE UPRAVOVÁNO/MAZÁNO.
+
 \section{Software}
 \subsection{openFramworks}
 OpenfFrameworks ~\cite{1} je open source C++ nástroj pro kreativní programování.\\
@@ -73,20 +75,79 @@ Otázkou je i jaký objekt má představovat gesto. Jedná-li se o číslo, je t
 \subsection{Časová náročnost}
 Kamery, ze kterých lze data využít k potřebám aplikace jsou RGB kamera s rozlišením 1920 x 1080 pixelů a kamera na snímání hloubky s rozlišením 512 x 424 pixelů. Dále jsou uvedena data pro hloubkovou kameru.
 
-Iterace samotným polem dvěma for cykly trvá zanedbatelných 0.8 ms, ale pokud při procházení načítáme hodnotu pixelu z kamery, časová náročnost je průměrně 5.8 s. Jelikož tato doba zpracování jediného snímku je nevhodná pro účely interakce s člověkem, musí se doba zkrátit.
+%Iterace samotným polem dvěma for cykly trvá zanedbatelných 0.8 ms, ale pokud při procházení načítáme hodnotu pixelu z kamery, časová náročnost je průměrně 5.8 s. Jelikož tato doba zpracování jediného snímku je nevhodná pro účely interakce s člověkem, musí se doba zkrátit.
 
-Nejjednodušší, ale limitující způsob je procházet pouze prostřední třetinu, jelikož se tím zkrátí doba zpracování jednoho snímku na průměrných 0.65 s. Jelikož ani to není nikterak zázračný čas a často může být nedostatečný, je tento problém potřeba vyřešit.
+%Nejjednodušší, ale limitující způsob je procházet pouze prostřední třetinu, jelikož se tím zkrátí doba zpracování jednoho snímku na průměrných 0.65 s. Jelikož ani to není nikterak zázračný čas a často může být nedostatečný, je tento problém potřeba vyřešit.
 
-Nabízí se několik možností jak ovlivnit periodu výpočtů, ale vzhledem k časové náročnosti čtení pixelů z videa se nejedá o řešení tohoto problému.
+%Nabízí se několik možností jak ovlivnit periodu výpočtů, ale vzhledem k časové náročnosti čtení pixelů z videa se nejedá o řešení tohoto problému.
 
-Program se snaží vykonávat všechny tři části tak často, jak může. Výpočetní analýzu můžeme provádět jednou za určitý čas. Aby to uživatel nezaznamenal, muselo by se jednat o desítky milisekund. V update i draw se může využít funkce ofGetElapsedTimef(), která vrací vteřiny v jednotkách float od spuštění programu nebo ofGetElapsedTimeMilis(), která vrací milisekudny od resetování čítače. Využitím modulo (i jiných) můžeme ovlivnit jak často se bude vykonávat každá aktualizační část.
+%Program se snaží vykonávat všechny tři části tak často, jak může. Výpočetní analýzu můžeme provádět jednou za určitý čas. Aby to uživatel nezaznamenal, muselo by se jednat o desítky milisekund. V update i draw se může využít funkce ofGetElapsedTimef(), která vrací vteřiny v jednotkách float od spuštění programu nebo ofGetElapsedTimeMilis(), která vrací milisekudny od resetování čítače. Využitím modulo (i jiných) můžeme ovlivnit jak často se bude vykonávat každá aktualizační část.
 
-Další způsob daného řešení je zpracovávat pouze některé snímky. Aplikace obsahuje funkci isFrameNew(), která vrací boolean a zjišťuje, jestli se snímek změnil či ne.
+%Další způsob daného řešení je zpracovávat pouze některé snímky. Aplikace obsahuje funkci isFrameNew(), která vrací boolean a zjišťuje, jestli se snímek změnil či ne.
 % %\subsection{Měření času v OF}
 %timeStart = ofGetElapsedTimef();
 %	/*kód*/
 %timeEnd = ofGetElapsedTimef();
 % %diffTime = timeEnd - timeStart;
+
+\section{Předzpracování}
+
+Kvůli přehlednější práci s matematickými parametry obrazu se nejdřívnačte video, které je uloženo v 1D poli do 2D pole pro další zpracování.\\
+
+\subsection{Filtrace}
+Jelikož se do obrazu dostane značné množství chybných hodnot, je potřeba je nejdříve co nejvíce eliminovat. Za tímto účelem je použit medián z okolí. Kvůli překreslování aktuálních hodnot jsou pro dalš výpočty použita data z pole zrcadlícího originální data. Pro každý pixel je načteno okolí o požadované velikosti, které se seřadí podle velikosti a jako výsledná hodnota se vezme hodnota z prostřední pozice.\\
+
+Velikost okolí by se měla vybrat empericky. Čím větší okolí, tím více je výsledek rozmazaný, ale zato obsahuje menší počet odchýlených hodnot, které by mohly narušit průběh zpracování. Pokud se vezme okolí malé, zůstane jich více, ale lépe se zachovají tvary. Na následujících obrázcích lze pozorovat rozdíl mezi okolím 9 (obrázek 9) a okolím 25(obrázek 10).\\
+
+\begin{figure}[htp]
+\centering
+\fbox{\includegraphics[width=.4\textwidth]{3-neigh9/befOUT.png}} \hfil
+\fbox{\includegraphics[width=.4\textwidth]{3-neigh9/afOUT.png}}
+\caption{Medián vzatý z okolí mohutnosti 9 \\ a) originální obraz b) po úpravě}
+\label{fig:neigh9}
+\end{figure}
+\begin{figure}[htp]
+\centering
+\fbox{\includegraphics[width=.4\textwidth]{4-neigh25/befOUT.png}} \hfil
+\fbox{\includegraphics[width=.4\textwidth]{4-neigh25/afOUT.png}}
+\caption{Medián vzatý z okolí mohutnosti 25 \\ a) originální obraz b) po úpravě}
+\label{fig:neigh25}
+\end{figure}
+
+\subsection{Prahování}
+Pro manipulaci s nalzenými tvary a výpočty mezi jednotlivými body je snazší pracovat s binárním obrazem. Nejdříve se obraz projde a najde nejbližší objekt (největší hodnota). Díky předchozí filtraci nezkreslí tuto hodnotu žádný špatně naměřený pixel. Následně se již porovná každý jednotlivý pixel s danou hodnotou a vytvoří se pole s hodnotami 1 a 0.\\
+
+Jelikož lze předpokládat, že člověk nebude mít vždy ruku striktně kolmo k pohledu kamery, je záhodno odečíst od této hodnoty odchylku. Výsledná hodnota tedy záleží na tom, zda původní pixel byl blíže, než nejbližší objekt s ohledem na odchylku.\\
+Na obrázcích 11, 12 a 13 lze pozorovat změny s ohledem na různé tolerance naklonění ruky. S odchylkou 10 vidíme, že ještě kus dlaně chybí, při odchylce 15 je s rukou načtený i znatelný kus předloktí a k tomu i nejednotný kus jiného objektu. Při toleranci pouze 12 je stále načteno moc pixelů a tak se jeví 10 jako nejvhodnější tolerance.\\
+
+\begin{figure}[htp]
+\centering
+\fbox{\includegraphics[width=.3\textwidth]{5-depth-10/befOUT.png}} \hfill
+\fbox{\includegraphics[width=.3\textwidth]{5-depth-10/afOUT.png}} \hfill
+\fbox{\includegraphics[width=.3\textwidth]{5-depth-10/binOUT.png}}
+\caption{Prahování s odchylkou 10 \\ a) originální obraz b) po filtraci c) binární obraz}
+\label{fig:tresh10}
+\end{figure}
+\begin{figure}[htp]
+\centering
+\fbox{\includegraphics[width=.3\textwidth]{7-depth-12/befOUT.png}} \hfill
+\fbox{\includegraphics[width=.3\textwidth]{7-depth-12/afOUT.png}} \hfill
+\fbox{\includegraphics[width=.3\textwidth]{7-depth-12/binOUT.png}}
+\caption{Prahování s odchylkou 12 \\ a) originální obraz b) po filtraci c) binární obraz}
+\label{fig:tresh11}
+\end{figure}
+\begin{figure}[htp]
+\centering
+\fbox{\includegraphics[width=.3\textwidth]{6-depth-15/befOUT.png}} \hfill
+\fbox{\includegraphics[width=.3\textwidth]{6-depth-15/afOUT.png}} \hfill
+\fbox{\includegraphics[width=.3\textwidth]{6-depth-15/binOUT.png}}
+\caption{Prahování s odchylkou 15 \\ a) originální obraz b) po filtraci c) binární obraz}
+\label{fig:tresh12}
+\end{figure}
+
+\section{Detekce dlaně}
+V binárním obraze se vyhledá největší čtvercová matice, kterou lze považovat za dlaň. Vytvoří se pomocné matice, do které se zapíší krajové hodnoty binárního obrazu a poté se binární pole prochází z levého horního rohu.\\
+Pokud je na dané pozici binárního obrazu nula, přepíše se i do matice. Pokud je tam ale jedna, pak se nalezne minimum třech sousedů z levého horního rohu. K minumu se přičte daná jedna, čímž se zvětší velikost čtvercové matice. Ve výsledku tak největší číslo, které je nalezené v pomocné matici, představuje pravý dolní roh největší matice a zároveň její velikost.ZDROJ
 
 
 \endinput
