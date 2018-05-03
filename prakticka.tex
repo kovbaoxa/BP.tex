@@ -8,11 +8,19 @@ Využívá se doplněk ofxKinectV2~\cite{2}. Oproti zabudovanému ofxKinect je o
 
 Kód v openFrameworks se dělí do třech hlavních částí. Jedná se o setup(), update() a draw(). Sekce setup slouží pro počáteční nastavení programu, proměnných apod., update obsahuje výpočetní a aktualizační část a draw má na starosti vykreslování.
 
-Program se snaží vykonávat všechny části tak často, jak to lze. V update i draw se může využít funkce ofGetTimef(), která vrací vteřiny v jednotkách float od spuštění programu. Za využití modulo funkce (i jiných) můžeme ovlivnit jak často se bude vykonávat každá aktualizační část nebo její podčást, jelikož lze předpokládat, že člověk nemění gesta rychleji, než jednou za milisekundu. %ačkoliv časové omezení to nebere v potaz
+Program se snaží vykonávat všechny části tak často, jak to lze. V update i draw se může využít funkce ofGetElapsedTimef(), která vrací vteřiny v jednotkách float od spuštění programu nebo ofGetElapsedTimeMilis(), která vrací milisekudny od resetování čítače. Pomocí využití modulo funkce (i jiných) můžeme ovlivnit jak často se bude vykonávat každá aktualizační část nebo její podčást, jelikož lze předpokládat, že člověk nemění gesta rychleji, než je počítač zpracovává. Omezení snímků určených ke zpracování programem lze povést i pomocí funkce isFrameNew(), která vrací boolean hodnotu určující, jestli se snímek změnil či nikoliv.
+
+% %\subsection{Měření času v OF}
+%timeStart = ofGetElapsedTimef();
+%	/*kód*/
+%timeEnd = ofGetElapsedTimef();
+% %diffTime = timeEnd - timeStart;
 
 \section{Hardware}
 \subsection{Kinect}
 K implementaci této práce je využita kamera Kinect v2. Zdroje, ze kterých lze data využít k potřebám aplikace jsou RGB kamera s rozlišením 1920 x 1080 pixelů a kamera na snímání hloubky s rozlišením 512 x 424 pixelů.
+
+Jedná se o relativně levnou a dostupnou kameru, která se v době zpracování této práce (začátek roku 2018) dá pořídit do tří tisíc korun.
 
 \section{Zpracovatelné vstupy}
 
@@ -62,55 +70,27 @@ Předpoklad pro následující text je zpracování videa ohledně nulových pix
 
 U správně ukazovaného gesta se dá předpokládat stejná vzdálenost jednotlivých bodů od kamery. Mírné odchylky se dají buď zahrnout offsetem, který rozdíly v určitém rozmezí bude považovat za ekvivalentní. nebo vyloučit úplně, jelikož se dá předpokládat, že to nebude mít vliv na zpracování, pokud se jedná o krajní body. Aby byl program uživatelsky přívětivý, v programu je zvolena odchylka na zachycení těchto rozdílů.
 
-Pokud by se vycházelo z předem definované vzdálenosti, šlo by nalézt největší možný čtverec, který by představoval dlaň. Pro účely nalezení by muselo existovat pole pixelů, které by reprezentovalo dlaň, či případně podobný objekt, který by se následně vyloučil podle dalších kritérií. Nadále by byla dlaň definovaná středem nalezeného čtverce a šířkou.
+V tomto programu se vychází z předem definované vzdálenosti, ve které je nalezen největší možný čtverec, který by představoval dlaň. Pro účely nalezení by muselo existovat pole pixelů, které by reprezentovalo dlaň, či případně podobný objekt, který by se následně vyloučil podle dalších kritérií. Nadále by byla dlaň definovaná středem nalezeného čtverce a šířkou.
 
-Následuje vylučování mylných objektů podle toho, jak robustní program má být a v jak obtížném prostředí bude detekce probíhat.
+Následuje vylučování mylných objektů podle toho, jak robustní program má být a v jak obtížném prostředí bude detekce probíhat. Tato část je předmětem budoucích rozšíření, jelikož se jedná o komplexní problematiku.
 
 Nutnou podmínkou ruky je, že obsahuje prsty, které mají proporcionálně ke dlani určitou velikost a vzdálenost od středu dlaně. Jelikož známe střed nalezené dlaně, lze identifikovat i prsty, respektive konečky prstů. Ze začátku musí být známo jaké gesto bude ruka zobrazovat při inicializaci, aby se dala nalézt. Pro ilustraci bude rozebráno gesto se všemi prsty nataženými. 
 
-Nejjednodušší metodou by bylo nalezení lokálních maxim po šíři dlaně. Když se dlaň rozdělí na čtyři části a v každé se nalezne maximum po ose y, pro každý prst se změří vzdálenost špičky prstu od středu dlaně. Pokud se bude výrazně odchylovat od proporcí běžné ruky, bude nalezený objekt vyloučen.
+Nejjednodušší metodou je nalezení lokálních maxim po šíři dlaně. Když se dlaň rozdělí na čtyři části a v každé se nalezne maximum po ose y (ose x pro horizontální polohu ruky), pro každý prst se změří vzdálenost špičky prstu od středu dlaně. Pokud se bude výrazně odchylovat od proporcí běžné ruky, bude nalezený objekt vyloučen.
 
-Promyšlenější programy využívají tvorbu skeletonu pro sledování a identifikaci jak postavy, tak i ruky. Jedná se o postup nalezení kloubů a jejich spojení, což pak reprezentuje ruku. Jedná se o možný, ale mírně náročnější a zdlouhavější postup.
-
+Rafinovanější programy využívají tvorbu skeletonu pro sledování a identifikaci jak postavy, tak i ruky. Jedná se o postup nalezení kostí a jejich kloubů, které jsou reprezentovány čárami, což pak reprezentuje ruku (případně tělo). Jedná se o možný, ale mírně náročnější a zdlouhavější postup.
 
 \subsubsection{Identifikace gesta}
-Je vhodno prodiskutovat, jednotlivá gesta s jejich potenciálními uživateli, a rozhodnout se mezi dynamickými a statickými gesty. Případně by obě možnosti šly kombinovat, ale byl by to nejspíše zbytečně náročný postup. Pro gesta dynamivká je potřeba udržovat si v paměti minulé stavy a stanovit dobu, pro kterou by to bylo přijatelné pro uživatele a zároveň to nemohlo být zaměnitelné nebo mylně identifikované. Nejjednodušší je identifikovat gesta statická, kde s využitím souřadnic lze vypočítat počet prstů, a tak v nejzákladnější implementaci bude prostor pro minimálně pět variant, pokud se vyloučí zavřená pěst pro zjednodušení. V momentě, kdy bude program podporovat identifikaci jednotlivých prstů od sebe, je k dispozici variant hned více, než by kdy bylo třeba nebo bybylo zapamatovatelné pro uživatele.
+Výběr jednotlivých gest je vhodno prodiskutovat s jejich potenciálními uživateli a rozhodnout se mezi dynamickými a statickými gesty. Případně by obě možnosti šly kombinovat, ale byl by to zbytečně komplikovaný postup. Pro gesta dynamická je potřeba udržovat si v paměti minulé stavy a stanovit dobu, po kterou by bylo přijatelné pro uživatele provádět gesto a zároveň to nemohlo být zaměnitelné nebo mylně identifikované. Nejjednodušší je identifikovat gesta statická, kde s využitím souřadnic lze vypočítat počet prstů, a tak v základní verzi bude prostor pro minimálně pět variant, pokud se pro zjednodušení vyloučí zavřená pěst. V momentě, kdy bude program podporovat identifikaci jednotlivých prstů od sebe, je k dispozici variant hned více, než by kdy bylo třeba nebo by bylo zapamatovatelné pro uživatele.
 
-\subsubsection{Vykreslení ruky}
-Objekty se přes video vykreslují pomocí FBO ("frame buffer object"). Jedná se o buffery s objekty, které je třeba vykreslit. Reprezentuje to plátno, na které se pomocí pomocí příkazů 'begin()' a 'end()' vykreslují 3D objekty a jednou za snímek či méně často (podle požadavků) se vykreslí pomocí příkazu 'draw()'. Pro lepší přehled se můžou jednotlivé prsty zvýraznit koulí, zatímco celá ruka krychlí. Vykreslení po obvodu se může zdát být zbytečným, jelikož by to vyžadovalo udržovat si v paměti celou množinu bodů po obvodu oproti jedinému bodu v případě jednotlivého objektu, který představuje celou ruku. 
+Počet prstů lze vypočítat po správné identifikaci jednotlivých prstů, a jedná se o nejjednodušší způsob klasifikace gesta. Pro přesnost se lze opřít i o úhly a vzdálenosti mezi středem dlaně a špičkami prstů podle vzorců uvedených v kapitole 2.1.4 u obrázku 8.
 
-TYTO DVE KAPITOLY SLOUČIT K PŘEDCHOZÍM ČÁSTEM
-\subsection{Nalezení ruky}
-
-
-\subsection{Identifikace gesta}
-Z předpokladů uvedených výše lze vypočítat počet prstů, což je nejjednodušší způsob identifikace gesta. Pro přesnost se lze opřít i o úhly a vzdálenosti mezi středem dlaně a špičkami prstů podle vzorců.\\
-REFERENCE na teoretickou část \\
-Nejjistější by bylo procházet blok, který obsahuje ruku a nalézt počet prstů z ní vyčnívající. Jedná se ale o časově náročnější postup.
-
-Sledování gesta může také probíhat pomocí ukládání historie. Za předpokladu, že se člověk hýbe pomaleji, než se střídají snímky k analýze, by se dala procházet menší část pole, například jen offset v okolí místa, kde se posledně nacházela ruka s prsty a kontrolovalo se, zda počet ukázaných prstů se zmenšil nebo zvětšil. K tomuto účelu by stále stačilo gesto definované počtem prstů bez závislosti na tom, o které se jedná.
+Sledování gesta může také probíhat pomocí ukládání historie. Za předpokladu, že se člověk hýbe pomaleji, než se střídají snímky k analýze, lze procházet menší část pole, například jen okolí místa, kde se posledně nacházela ruka s prsty a kontrolovat změny, zda počet ukázaných prstů se zmenšil nebo zvětšil. K tomuto účelu by stále stačilo gesto definované počtem prstů bez závislosti na tom, o které konkrétně se jedná.
 
 Otázkou je i jaký objekt má představovat gesto. Jedná-li se o číslo, je to nejjednodušší. Může to být ale i objekt, který obsahuje pět prstů, z nichž každý může být zvednutý nebo nikoliv. Pak je podstatně přehlednější implementace více než pěti gest. Identifikace je ale náročnější, jelikož každý nalezený prst se musí nejdříve identifikovat, poté aktualizovat objekt představující ruku před kamerou a porovnat s implementovanými gesty. 
 
-%\section{Omezení}
-
-%\subsection{Časová náročnost}
-%Kamery, ze kterých lze data využít k potřebám aplikace jsou RGB kamera s rozlišením 1920 x 1080 pixelů a kamera na snímání hloubky s rozlišením 512 x 424 pixelů. Dále jsou uvedena data pro hloubkovou kameru.
-
-%Iterace samotným polem dvěma for cykly trvá zanedbatelných 0.8 ms, ale pokud při procházení načítáme hodnotu pixelu z kamery, časová náročnost je průměrně 5.8 s. Jelikož tato doba zpracování jediného snímku je nevhodná pro účely interakce s člověkem, musí se doba zkrátit.
-
-%Nejjednodušší, ale limitující způsob je procházet pouze prostřední třetinu, jelikož se tím zkrátí doba zpracování jednoho snímku na průměrných 0.65 s. Jelikož ani to není nikterak zázračný čas a často může být nedostatečný, je tento problém potřeba vyřešit.
-
-%Nabízí se několik možností jak ovlivnit periodu výpočtů, ale vzhledem k časové náročnosti čtení pixelů z videa se nejedá o řešení tohoto problému.
-
-%Program se snaží vykonávat všechny tři části tak často, jak může. Výpočetní analýzu můžeme provádět jednou za určitý čas. Aby to uživatel nezaznamenal, muselo by se jednat o desítky milisekund. V update i draw se může využít funkce ofGetElapsedTimef(), která vrací vteřiny v jednotkách float od spuštění programu nebo ofGetElapsedTimeMilis(), která vrací milisekudny od resetování čítače. Využitím modulo (i jiných) můžeme ovlivnit jak často se bude vykonávat každá aktualizační část.
-
-%Další způsob daného řešení je zpracovávat pouze některé snímky. Aplikace obsahuje funkci isFrameNew(), která vrací boolean a zjišťuje, jestli se snímek změnil či ne.
-% %\subsection{Měření času v OF}
-%timeStart = ofGetElapsedTimef();
-%	/*kód*/
-%timeEnd = ofGetElapsedTimef();
-% %diffTime = timeEnd - timeStart;
+\subsubsection{Vykreslení ruky}
+Objekty se přes video vykreslují pomocí FBO ("frame buffer object"). Jedná se o buffery s objekty, které je třeba vykreslit. Reprezentují plátno, na které se pomocí pomocí příkazů 'begin()' a 'end()' vykreslují 3D objekty a jednou za snímek či méně často (podle požadavků) se vykreslí pomocí příkazu 'draw()'. Pro lepší přehled se můžou jednotlivé prsty (konečky prstů) zvýraznit koulí, zatímco celá ruka krychlí. Vykreslují se pouze základní objekty, které upřesňují nalezenou pozici rukou a prstů, aby nebylo potřeba udržovat v paměti přesné okraje ruky, které ani nejsou potřeba.
 
 \section{Předzpracování}
 
@@ -211,6 +191,14 @@ V aplikaci je implentováno několik způsobů nalezení prstů. Ne všechny jso
 Za předpokladu, že jsou prsty nezaměnitelně hubenější, než předloktí, lze okolo dlaně ve vzdálenosti $ offset\_palm $ od okraje vést čáru ve všech čtyřech směrem. Následně se iteruje podél jednotlivých čar a detekují změny v binárním obraze a zaznamenává se počet předpokládanách prstů. Jelikož je potřeba znát i pozici palce, ukládají se dva směry prstů.
 
 Empiricky nalezená nejlepší hodnota pro $ offset\_palm $ je $ \frac{5}{7} $ šířky dlaně. 
+
+\begin{figure}[htp]
+\centering
+\fbox{\includegraphics[width=.4\textwidth]{whereFingersAt.png}}
+\caption{todo Popisek.}
+\label{fig:whereFingers}
+\end{figure}
+
 \subsection{Detekce konců prstů}
 Všechny postupy se zakládají na prohledávání v okolí dlaně. Maximální délka prstů se odvozuje od nalezené velikosti dlaně. Prsty nesmí být ani příliš dlouhé ani příliš krátké.\\
 
@@ -219,8 +207,18 @@ Nejjednodušší postup spočívá v rozdělení strany, na které se nachází 
 
 Jednotlivé části se následně procházejí a hledá se pixel, který ještě patří prstu a je nejvýše/nejníže dle orientace.\\
 
+\begin{figure}[htp]
+\centering
+\fbox{\includegraphics[width=.4\textwidth]{findFingerTips.png}}
+\caption{todo Popisek.}
+\label{fig:findFingerTips}
+\end{figure}
+
 %findFingerTips2
 Další způsob zvyšuje použitelnost předchozí metody. Stále se prochází pole, ale celkový obdélník se předá v kuse a hledá se největší vzdálenost od středu dlaně. Stále platí omezení délky, tudíž je přesnější největší možná vzdálenost, která stále patří prstu.
+
+%findFingerTips3
+Funkce findFingerTips3 si ukládá souřadnice, na kterých byly detekovány prsty z předchozí kapitoly. Následně si dopočítá střed prstu a po přímce prohledává binární obraz tak daleko, dokud nenarazí na konec prstu (nulu v binárním obraze). 
 
 \section{Statistika}
 Vyhodnocení funkčnosti a použitelnosti navržených metod.
