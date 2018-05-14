@@ -47,10 +47,13 @@ Využitelné parametry:
 \end{itemize}
 
 \subsection{RGB video}
-Zpracování obrazu z RGB videa nebude v této práci implementováno, ale patří do jedné z variant, jak detekovat ruku a následně i gesta.\\
-komentář: nejsem si jistá, jestli to sem patří, ale do osnovy/obsahu práce to vytváří kompletnější dojem
+Výstupem z RGB kamery je dvoudimenzonální pole se třemi hodnotami jednotlivých barevných složek. Zpracování obrazu z RGB videa nebude v této práci implementováno, ale patří do jedné z variant, jak detekovat ruku a následně i gesta. \\
 
 \subsection{Hloubkové video}
+Zpracování hodnot z hloubkové kamery je jednodušší, už jenom protože se jedná o jednodimenzionální pole s hodnotami. Prahování (tresholding) se pak provádí jednoduchým porovnáním hodnot a vytvoření binárního obrazu je rychlejší.
+
+Nedostatky vyplývající z využití pouze hloubkové kamery spočívají hlavně v tom, že pokud je v záběru objekt , který má podobnou stavbu a strukturu jako je ruka, tak je mylně detekován a zpracováván.
+
 Doporučený postup by měl sestávat ze čtyř částí:
 
 \begin{enumerate}
@@ -64,7 +67,7 @@ Doporučený postup by měl sestávat ze čtyř částí:
 Lze zde dát uživateli na vědomí podmínky interakce s kamerou. Například pozice ruky musí být v prostřední třetině. Alternativou může být počáteční umístění ruky doprostřed kamery, aby mohla dále vycházet z umístění za využívání historie nebo aby se zkrátila doba hledání ruky. V této aplikaci je nejen počátečná podmínkou, že ruka musí být nejbližší objekt před kamerou.
 
 \subsubsection{Nalezení ruky}
-Jedná se o prostor pro určení podmínek a způsobu vyhledávání ruky. Tato část rozhoduje o robustnosti kódu a využitelnosti aplikace. Je vhodné nejdříve odstranit nulové a jinak nevyhovující pixely, vyplnit díry v obraze a počítat s dalšími chybami hardwaru a vlivy okolí. Pokud má být aplikace využívaná v jakkoliv náročnějším okolí, musí obsahovat i vyloučení veškerých nevyhovujícíh objektů, jako jsou věci podobného tvaru či případně cizí ruce.
+Jedná se o prostor pro určení podmínek a způsobu vyhledávání ruky. Tato část rozhoduje o robustnosti kódu a využitelnosti aplikace. Je vhodné nejdříve odstranit nulové a jinak nevyhovující pixely, vyplnit díry v obraze a počítat s dalšími chybami hardwaru a vlivy okolí. Pokud má být aplikace využívaná v jakkoliv náročnějším okolí, musí obsahovat i vyloučení veškerých nevyhovujícíh objektů, jako jsou věci podobného tvaru či případně cizí ruce. Při využívání pouze czdáleností a úhlů jednotlivých pixelů se těžko zahrnují všechny možnosti a způsoby provedení gesta. Jelikož mají lidé různé dispozice rukou, to co je pro jednoho normální, může kazit správnou detekci ruky jiného jedince.
 
 Předpoklad pro následující text je zpracování videa ohledně nulových pixelů. Měly by být ignorovány v rámci chybného vstupu. Zároveň platí, že čím více podmínek se uživateli na začátku předloží, tím jednodušší je nalezení ruky. 
 
@@ -78,7 +81,7 @@ Nutnou podmínkou ruky je, že obsahuje prsty, které mají proporcionálně ke 
 
 Nejjednodušší metodou je nalezení lokálních maxim po šíři dlaně. Když se dlaň rozdělí na čtyři části a v každé se nalezne maximum po ose y (ose x pro horizontální polohu ruky), pro každý prst se změří vzdálenost špičky prstu od středu dlaně. Pokud se bude výrazně odchylovat od proporcí běžné ruky, bude nalezený objekt vyloučen.
 
-Rafinovanější programy využívají tvorbu skeletonu pro sledování a identifikaci jak postavy, tak i ruky. Jedná se o postup nalezení kostí a jejich kloubů, které jsou reprezentovány čárami, což pak reprezentuje ruku (případně tělo). Jedná se o možný, ale mírně náročnější a zdlouhavější postup.
+Rafinovanější programy využívají tvorbu skeletonu pro sledování a identifikaci jak postavy, tak i ruky. Jedná se o postup nalezení kostí a jejich kloubů, které jsou reprezentovány čárami, což pak reprezentuje ruku (případně tělo). Jedná se o možný, ale náročnější a zdlouhavější postup.
 
 \subsubsection{Identifikace gesta}
 Výběr jednotlivých gest je vhodno prodiskutovat s jejich potenciálními uživateli a rozhodnout se mezi dynamickými a statickými gesty. Případně by obě možnosti šly kombinovat, ale byl by to zbytečně komplikovaný postup. Pro gesta dynamická je potřeba udržovat si v paměti minulé stavy a stanovit dobu, po kterou by bylo přijatelné pro uživatele provádět gesto a zároveň to nemohlo být zaměnitelné nebo mylně identifikované. Nejjednodušší je identifikovat gesta statická, kde s využitím souřadnic lze vypočítat počet prstů, a tak v základní verzi bude prostor pro minimálně pět variant, pokud se pro zjednodušení vyloučí zavřená pěst. V momentě, kdy bude program podporovat identifikaci jednotlivých prstů od sebe, je k dispozici variant hned více, než by kdy bylo třeba nebo by bylo zapamatovatelné pro uživatele.
@@ -146,6 +149,7 @@ Na obrázcích 11, 12 a 13 lze pozorovat změny s ohledem na různé tolerance n
 \caption{Prahování s odchylkou 15 \\ a) originální obraz b) po filtraci c) binární obraz}
 \label{fig:tresh12}
 \end{figure}
+\newpage
 \section{Detekce ruky}
 Definujeme-li ruku jako nejbližší objekt, pak již při prahování je nalezena. Pro lepší názornost se ukládá umístění objektu pomocí pole souřadnic. Na videu je vizualizován pomocí červeného čtverce, který má střed v zprůměrovaných souřadnicích (Xavg, Yavg) a velikost odvozenou od velikosti pole. 
 Na následujících obrázcích je vidět rozdíl mezi vyhledáváním v originálních datech a nebere v potaz chybné hodnoty a vyhledáváním v binárním obraze s vyfiltrovaným šumem.
@@ -163,42 +167,54 @@ Na následujících obrázcích je vidět rozdíl mezi vyhledáváním v origin�
 \end{figure}
 
 Již z obrázků lze poznat, že vyhledávání v binárních datech je přesnější.
-
+\newpage
 \section{Detekce dlaně}
-V binárním obraze se vyhledá největší čtvercová matice, kterou lze považovat za dlaň. Vytvoří se pomocné matice, do které se zapíší krajové hodnoty binárního obrazu a poté se binární pole prochází z levého horního rohu.\\
-Pokud je na dané pozici binárního obrazu nula, přepíše se i do matice. Pokud je tam ale jedna, pak se nalezne minimum třech sousedů z levého horního rohu. K minumu se přičte daná jedna, čímž se zvětší velikost čtvercové matice. Ve výsledku tak největší číslo, které je nalezené v pomocné matici, představuje pravý dolní roh největší matice a zároveň její velikost~\cite{23}.
-\begin{figure}[htp]
+V binárním obraze se vyhledá největší čtvercová matice, kterou lze považovat za dlaň. Vytvoří se pomocná matice, do které se zapíší krajové hodnoty binárního obrazu a poté se binární pole prochází z levého horního rohu. Pokud je na dané pozici binárního obrazu nula, přepíše se i do matice. Pokud je tam ale jedna, pak se nalezne minimum třech sousedů z levého horního rohu. To znamená minimum z horního, levého a šikmo horního nalevo. K minumu se přičte jednička, čímž se zvětší velikost čtvercové matice. Ve výsledku tak největší číslo, které je nalezené v pomocné matici, představuje pravý dolní roh největší nalezené matice a zároveň její velikost~\cite{23}. Pro lepší práci v budoucnu je dlaň uložená jako středový bod a velikost matice.
+
+\begin{figure} [htp]
+%\begin{subfigure}[b][0.2\textwidth]
 \centering
 \includegraphics[width=.45\textwidth]{before.png} \hfill
 \includegraphics[width=.45\textwidth]{after.png} 
-\caption{Nalezení největší jednotkové matice v binárním obraze.}
+%	\caption{a) původní matice}
+%\end{subfigure}
+%\begin{subfigure}[b][0.2\textwidth]
+%\caption{b) výsledná matice}
+%\end{subfigure}
+\centering
+\caption{a) původní matice b) výsledná matice\\ Nalezení největší jednotkové matice v binárním obraze.}
 \label{fig: palm}
-\end{figure}\\
-Vykresluje se pomocí zeleného čtverce, jenž má velikost nalezené jednotkové matice a jeho střed má souřadnice Xc, Yc, které budou následně využívány jako střed dlaně.
+\end{figure}
+
+Dlaň se vykresluje pomocí zeleného čtverce, jenž má velikost nalezené jednotkové matice a jeho střed má souřadnice Xc, Yc, které budou následně využívány jako střed dlaně.
 
 \begin{figure}[htp]
 \centering
-\fbox{\includegraphics[width=\textwidth]{square.png}}
+\fbox{\includegraphics[width=0.8\textwidth]{square.png}}
 \caption{Červený čtverec znázorňuje polohu a velikost nalezeného nejbližšího objektu.\\
 Zelený čtverec obkresluje největší nalezený čtverec v objektu.}
 \label{fig:square}
 \end{figure}
 
+\section{Oblast zájmu (ROI)}
+Pro optimalizaci algortimu se z původního obrazu vykrojuje ROI ("region of interest"). Po nalezení dlaně se z binárního obrazu překopíruje do menšího pole oblast okolo centra dlaně a všechny následující vyhledávání a detekce probíhá na již menším poli. 
+
+
 \section{Detekce prstů}
-V aplikaci je implentováno několik způsobů nalezení prstů. Ne všechny jsou efektivní a od některých se upustilo (viz kapitola statistika), ale pro různost postupu jsou zde uvedeny.
+V aplikaci je implentováno několik způsobů nalezení prstů. Ne všechny jsou efektivní a od některých se upustilo (viz kapitola statistika), ale pro různost postupu jsou zde uvedeny. Pro všechny platí předchozí úpravy obrazu a detekce směru prstů.
 
 \subsection{Detekce směru prstů}
-Za předpokladu, že jsou prsty nezaměnitelně hubenější, než předloktí, lze okolo dlaně ve vzdálenosti $ offset\_palm $ od okraje vést čáru ve všech čtyřech směrem. Následně se iteruje podél jednotlivých čar a detekují změny v binárním obraze a zaznamenává se počet předpokládanách prstů. Jelikož je potřeba znát i pozici palce, ukládají se dva směry prstů.
+Za předpokladu, že jsou prsty nezaměnitelně hubenější, než předloktí, lze okolo dlaně ve vzdálenosti $ offset\_palm $ od okraje vést čáru ve všech čtyřech směrem (viz obrázek 19). Následně se iteruje podél jednotlivých čar a detekují změny v binárním obraze. Pokud jednotlivý nalezený objekt má šířku větší než je třetina šířky dlaně, jedná se o kus předloktí a nezapočítává se. Zbylé objekty se zaznamenávají do počtu předpokládanách prstů.  Pro přesnější detekci se daný algoritmus provede ještě jednou pro větší vzdálenost od dlaně. Pokud je pro obě vzdálenosti počet detekovaných prstů větší, než nula, je daný směr zaznamenán. Jelikož je potřeba znát i pozici palce, ukládají se dva směry prstů.
 
-Empiricky nalezená nejlepší hodnota pro $ offset\_palm $ je $ \frac{5}{7} $ šířky dlaně. 
+Empiricky nalezená nejlepší hodnota pro $ offset\_palm $ je $ \frac{5}{7} $ šířky dlaně, v druhém kole je zvolen dvojnásobný offset. 
 
 \begin{figure}[htp]
 \centering
 \fbox{\includegraphics[width=.4\textwidth]{whereFingersAt.png}}
-\caption{todo Popisek.}
+\caption{Zelený čtverec představuje hranice nalezené dlaně. Procházením podél žluté čáry, která je posunuta o offset se počítá počet změn a kontroluje tloušťka nalezených objektů. Pokud tlouťka odpovídá méně než třetině šířky dlaně, pak se považuje za prst.}
 \label{fig:whereFingers}
 \end{figure}
-
+\newpage
 \subsection{Detekce konců prstů}
 Všechny postupy se zakládají na prohledávání v okolí dlaně. Maximální délka prstů se odvozuje od nalezené velikosti dlaně. Prsty nesmí být ani příliš dlouhé ani příliš krátké.\\
 
@@ -219,6 +235,10 @@ Další způsob zvyšuje použitelnost předchozí metody. Stále se prochází 
 
 %findFingerTips3
 Funkce findFingerTips3 si ukládá souřadnice, na kterých byly detekovány prsty z předchozí kapitoly. Následně si dopočítá střed prstu a po přímce prohledává binární obraz tak daleko, dokud nenarazí na konec prstu (nulu v binárním obraze). 
+
+%findFingerTips4
+Další implementovaná možnost nalezení konců prstů spočívá v procházení ROI.
+
 
 \section{Statistika}
 Vyhodnocení funkčnosti a použitelnosti navržených metod.

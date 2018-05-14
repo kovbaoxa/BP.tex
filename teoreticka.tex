@@ -3,8 +3,11 @@
 
 \section{Stávající metody}
 \subsection{Předzpracování obrazu}
-\subsubsection{Binární obraz}
-Většina metod se zakládá na zpracování binárního obrazu. Probíhá to zvolením prahové hodnoty, se kterou se všechny hodnoty porovnají a ve výsledku vznikne binární obraz. Objekt, který je středem zájmu, se skládá z pixelů s hodnotou 1 zatímco ostatní mají hodnotu 0.
+\subsubsection{Binární obraz} %tresholding
+Většina metod se zakládá na zpracování binárního obrazu. Probíhá to zvolením prahové hodnoty, se kterou se všechny hodnoty porovnají a ve výsledku vznikne binární obraz. Objekt, který je středem zájmu, se skládá z pixelů s hodnotou 1 zatímco ostatní mají hodnotu 0. Metoda se nazývá tresholding a existuje více druhů: ~\cite{hlav}
+%Many modifications of thresholding exist: local thresholding, band threshol­
+%ding, semi-thresholding, multi-thresholding, etc.
+%Hlaváč kniha
 \subsubsection{Rozostření}
 Rozostření slouží k eliminaci šumu v obraze. Nejosvědčenější metody jsou nízkofrekvenční filtry jako je Gauss a medián. Tato kapitola čerpá z Pikoly~\cite{15} kapitoly 5 a 6.\\
 
@@ -43,8 +46,17 @@ Aby se zabránilo rozšíření do nekonečna se v konvoluční masce přidělí
 Převzato z ~\cite{15} }
 \end{figure}
 
-Mezi vysokofrekvenční filtry, které se používají na zpracování digitálního obrazu patří i Laplaceův filtr. Ve výpočtu se užívá gradient, což je vektorová veličina určující směr a strmost největšího růstu funkce. Laplaceův filtr využívá pouze velikost a pro její odhad se používá všesměrný operátor vycházející s parciálních derivací. %POPIS VYUZITI, PROC JE ZMINEMN?
+Mezi vysokofrekvenční filtry, které se používají na zpracování digitálního obrazu patří i Laplaceův filtr. Ve výpočtu se užívá gradient, což je vektorová veličina určující směr a strmost největšího růstu funkce. Laplaceův filtr využívá pouze velikost a pro její odhad se používá všesměrný operátor vycházející s parciálních derivací. %POPIS VYUZITI, PROC JE ZMINEMN?- používá se na edge detection
 %http://soc.nidv.cz/data/2007/01-2.pdf ?
+
+%Gradient operators as a measure of edge sheerness can be divided into three categories:
+%1. Operators approximating derivatives of the image function using differences. Some
+%of them are rotationally invariant ( e.g., Laplacian) and thus are computed from one
+%convolution mask only.
+%The Laplacian operator has a disadvantage-it responds doubly to some edges in the
+%image.
+%Zdroj Hlaváč kniha
+
 \begin{eqnarray}
 \nabla^{2}g(x,y) = \frac{\delta^{2}g(x,y)}{\delta x^{2}} + \frac{\delta^{2}g(x,y)}{\delta y^{2}}
 \end{eqnarray} 
@@ -57,6 +69,7 @@ Laplacián je aproximován diskrétní konvolucí. Příklad konvolučního jád
 \end{bmatrix}
 \end{eqnarray} 
 
+%VLOZIT STHINNINH AND SHRINKING
 
 \subsection{Rozpoznávání postav}
 Možnosti:
@@ -182,6 +195,7 @@ $TC_{angle} = 90 - tan^{-1} \frac{y_{ft}-y_{pc}}{x_{ft} - x_{pc}}$
 \end{center}
 \newpage
 \section{Aktuální aplikace}
+\subsection{Možnosti využití gest při ovládání mobilního robotu}
 Všechny aplikace, které mohou využít výhod~\cite{14}:
 \begin{itemize}
 \item Ovládání na velmi malém prostoru
@@ -210,12 +224,17 @@ Již využíváno v:
 Mezi využítí v lékařské oblasti patří převážně rehabilitační cvičení. V nemocnici ve městě Reading využívají kameru Kinect pacienti po mrtvici na zlepšení pohyblivosti a koordinace~\cite{21}. 
 
 \subsubsection{UI během operace}
-Další možnosti se nabízí i při procházení záznamů pacienta při operaci, aniž by se kdokoliv dotýkal nesterilních věcí. Další možností se nabízí i na operačním sále, když chce doktor přístup k záznamům pacienta a nemusí se tak dotýkat žádných nesterilních věcí~\cite{24}.\\
+Další možnosti se nabízí i při procházení záznamů pacienta při operaci, aniž by se kdokoliv dotýkal nesterilních věcí. Další možností se nabízí i na operačním sále, když chce doktor přístup k záznamům pacienta a nemusí se tak dotýkat žádných nesterilních věcí ~\cite{24}.\\
 
 //cite{22} preliminary investigation of movement
 
 \subsubsection{Bixi}
 Bixi je bezdotykový ovladač k mobilnímu zařízení. Hlavním zaměřením je usnadnění ovládání vedlejších aplikací během řízení auta tak, aby se řidič mohl soustředit na provoz. Po spárování se zařízením pomocí bluetooth lze gesty volit adresu pro navigaci, ztlišit či zastavit hudbu, ztlumit jas obrazovky, přijímat hovory a jiné~\cite{bixi}.
+
+\subsubsection{DJI drony}
+Drony od společnosti Da-Jiang Innovations~\cite{dji} již také využívají rozpoznávání gest k ovládání. Mavic, Phanton 4 Pro, Advance  a Spark podporují focení, které se zapne vykreslením žádaného rámečku fotky rukou.
+
+Spark podporuje mnohem více funkcí ovládaných gesty. Po natažení ruky směrem dopředu a nahoru k dronu pod úhlem $ 45^\circ $ se začne nahrávat video. Podporuje také vznášení se z dlaně a přistávání na dlaň. Pro vzlet je třeba držet dron na dlaně kamerou k obličeji, aby ho to rozpoznalo, a následně se vznese. Po mávnutí rukou před kamerou jedním ze čtyř hlavních směrů se dron posune daným směrem. Při zamávání začne dron následovat trajektorii chůze člověka. Při detekci dlaně pod sebou na ni dron přistane~\cite{heliguy}.
 
 \endinput
 %%
