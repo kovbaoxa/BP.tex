@@ -1,36 +1,37 @@
+
 \textit{}\chapter{Stávající metody a aplikace}
 %Some introductory text\dots
 
 \section{Stávající metody}
+Cílem kapitoly je rešerše akutálních metod zorpoznávání lidí, těla a jeho částí. Nezbytnou součástí je i tomu předcházející úprava načteného obrazu. Berou se zde v potaz stávající metody, které mohou sloužit k účelům této práce.
+
 \subsection{Předzpracování obrazu}
-\subsubsection{Binární obraz} %tresholding
-Většina metod se zakládá na zpracování binárního obrazu. Probíhá to zvolením prahové hodnoty, se kterou se všechny hodnoty porovnají a ve výsledku vznikne binární obraz. Objekt, který je středem zájmu, se skládá z pixelů s hodnotou 1 zatímco ostatní mají hodnotu 0. Metoda se nazývá tresholding a existuje více druhů: ~\cite{hlav}
-%Many modifications of thresholding exist: local thresholding, band threshol­
-%ding, semi-thresholding, multi-thresholding, etc.
-%Hlaváč kniha
+Předzpracování se týká všech aplikací využívajícíh digitální obrazy z kamery. Rozostření obrazu je nezbytné ve všech případech, následně jsou probírány již věci specificky pro zpracování obrazu k detekci objektů. U rozopstření a vytváření kostry objektu je uvedeno více variant.
+
 \subsubsection{Rozostření}
-Rozostření slouží k eliminaci šumu v obraze. Nejosvědčenější metody jsou nízkofrekvenční filtry jako je Gauss a medián. Tato kapitola čerpá z Pikoly~\cite{15} kapitoly 5 a 6.\\
+Rozostření slouží k eliminaci šumu v obraze. Nejosvědčenější metody jsou nízkofrekvenční filtry jako je Gauss a medián. Tato kapitola čerpá ze závěrečné práce Pikory~\cite{15}, přesněji kapitoly 5 a 6.\\
 
 Filtr medián se zaměřuje na vyhlazování lokálních extrémů z obrazu. Nezachovává jemné čáry a ostré rohy, takže je vhodný pouze v aplikacích, kde na tom nezávisí aplikace. Výraznou výhodu představuje v odstranění extrémů, které v obraze mohou vzniknout. Narozdíl od průměrování obraz nezkreslí chybné pixely s extrémníma hodnotama. % Nejprve se seřadí všechny hodnoty z aktuální konvoluční matice a vybere hodnotu, která leží uprostřed seřazeného pole a tou nahradí zpracovávaný bod.
  
-Velikost okolí zahrnutého v analýze se může zvětšit při větší hustotě šumu. V aplikaci na hloubkový obraz, ve kterém se detekují prsty je ale důležité zachovat určité rozlišení. Na obrázku 1 lze pozorovat rozdíly mezi filtrem s průměrováním (b) a mediánem (c).\\
+Velikost okolí zahrnutého v analýze se může zvětšit při větší hustotě šumu. V aplikaci na hloubkový obraz, ve kterém se detekují prsty je ale důležité zachovat určité rozlišení. Na obrázku~\ref{pic1} lze pozorovat rozdíly mezi filtrem s průměrováním (b) a mediánem (c).\\
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.8\linewidth]{median.jpg}
 \caption{a) původní obraz b) průměrování c) medián\\
  Převzato z ~\cite{15} }
+ \label{pic1}
 \end{figure}
 
 \newpage
-Gaussovský filtr je průměrování s Gaussovským rozložením. Využívá se k vyhlazování obrazu a odstranění detailů a šumu. Obrázek 2 zachycuje rozdál mezi opakovanou aplikací Gaussovského filtru.
+Gaussovský filtr je průměrování s Gaussovským rozložením. Využívá se k vyhlazování obrazu a odstranění detailů a šumu. Obrázek~\ref{pic2} zachycuje rozdíl mezi opakovanou aplikací Gaussovského filtru.
 \begin{eqnarray}
 G(x,y) = \frac{1}{2 \pi \sigma^{2}}*e^{-\frac{x^{2}+y^{2}}{2\sigma^{2}}}  ,
 %ae^{-\frac{(x-b)^{2}}{2c^{2}}}
 \end{eqnarray}
 kde x a y jsou souřadnice a $ \sigma $ je směrodatná odchylka.\\
 
-Aby se zabránilo rozšíření do nekonečna se v konvoluční masce přidělí větší váha bodu ve středu. Aby se aplikací konvoluční masky neměnila světlost, součet všech složek konvoluční matice dává hodnotu 1. Příklad konvoluční masky:
+V konvoluční masce se přidělí větší váha bodu ve středu, aby se zabránilo rozšíření do nekonečna. Aby se aplikací konvoluční masky neměnila světlost, součet všech složek konvoluční matice dává hodnotu 1. Příklad konvoluční masky:
 \begin{eqnarray}
 \frac{1}{16} \begin{bmatrix}
 1 & 2 & 1 \\
@@ -44,18 +45,38 @@ Aby se zabránilo rozšíření do nekonečna se v konvoluční masce přidělí
 \includegraphics[width=0.8\linewidth]{gauss.jpg}
 \caption{a) původní obraz b) jednou aplikovaný Gaussův filtr c) třikrát aplikovaný Gaussovský filtr
 Převzato z ~\cite{15} }
+\label{pic2}
 \end{figure}
 
-Mezi vysokofrekvenční filtry, které se používají na zpracování digitálního obrazu patří i Laplaceův filtr. Ve výpočtu se užívá gradient, což je vektorová veličina určující směr a strmost největšího růstu funkce. Laplaceův filtr využívá pouze velikost a pro její odhad se používá všesměrný operátor vycházející s parciálních derivací. %POPIS VYUZITI, PROC JE ZMINEMN?- používá se na edge detection
-%http://soc.nidv.cz/data/2007/01-2.pdf ?
+\subsubsection{Prahování} %tresholding
+Většina metod se zakládá na zpracování binárního obrazu. Probíhá to zvolením prahové hodnoty, se kterou se všechny hodnoty porovnají a ve výsledku vznikne binární obraz. Objekt, který je středem zájmu, se skládá z pixelů s hodnotou 1 zatímco ostatní mají hodnotu 0. Metoda se nazývá "tresholding" a existuje více druhů: lokální, pásmové, polo-prahování, multi-prahování a další.~\cite{hlav}
+%Many modifications of thresholding exist: local thresholding, band threshol­
+%ding, semi-thresholding, multi-thresholding, etc.
+%Hlaváč kniha
 
-%Gradient operators as a measure of edge sheerness can be divided into three categories:
-%1. Operators approximating derivatives of the image function using differences. Some
-%of them are rotationally invariant ( e.g., Laplacian) and thus are computed from one
-%convolution mask only.
-%The Laplacian operator has a disadvantage-it responds doubly to some edges in the
-%image.
-%Zdroj Hlaváč kniha
+\subsubsection{Nalezení kostry}
+Při hledání topologie a tvaru objektu lze použít například skeletonizaci. Ve zjednodušené představě se jendá o zredukovaný objekt, ze kterého zbyde pouze hubená reprezentace obsahující významné body. Tato kapitola vychází z Palagyiovo přehledu~\cite{25}. Existují tři způsoby:
+
+\begin{itemize}
+\item detekce ze vzdálenostní mapy
+\item výpočet Veronoiovo diagramu, který je generován pomocí hraničních bodů
+\item ztenčení
+\end{itemize}
+
+Jelikož lze nalézt pouze předpokládanou kostru objektu, jsou zde dva rozhodovací faktory. Požadavek zachování topologie %zaručuje  
+nebo geometrická podmínka, která vynucuje umístění kostry uprostřed objektu. Topologickou podmínku splňuje Voronojův diagram a ztenčování, geometrickou zaručuje detekce ze vzdálenostní mapy a Voronojova kostra.
+
+Detekce ze vzdálenostní mapy lze popsat třemi kroky. Nejdříve se v binárním obraze označí hraniční body objektu. Potí se vygeneruje vzdálenostsní mapa podle toho, jak daleko se nachází konkrétní pixel od nejbližšího hraničního bodu. Jako hrany kostry se označí pixely, které jsou lokíálními maximy.
+
+Voronoiovy diagramy dělí prostor na části podle množiny bodů tak, aby se v každé části nacházel právě jeden bod. Do množiny bodů se přidá část hraničních bodů objektu. Sousedící okraje částí tvoří kostru. Čím více bodů množina obsahuje, tím přesnější kostra bude.
+
+Ztenčování je proces, při kterém se opakovaně odstraňují pixely, dokud se v obraze vyskytují pixely, jejichž odstranění neporušuje podmínky. Podmínky se mohou lišit podle toho, k jakým účelům je algoritmus používán.
+
+\subsubsection{Detekce hran}
+K rozpoznávání v obraze lze dobře využít nalezených hran. Považovat za hrany lze místa, ve kterých se výrazně liší jas. K výpočtu hran se používá gradient, což je vektorová veličina určující směr a strmost největšího růstu funkce~\cite{hlav}.
+
+Mezi vysokofrekvenční filtry, které se používají na zpracování digitálního obrazu, patří i Laplaceův filtr. Ve výpočtu se užívá gradient. Laplaceův filtr využívá pouze velikost a pro její odhad se používá všesměrný operátor vycházející s parciálních derivací. Nevýhodou je, že některé hrany detekuje dvakrát. %POPIS VYUZITI, PROC JE ZMINEMN?- používá se na edge detection
+%http://soc.nidv.cz/data/2007/01-2.pdf ?
 
 \begin{eqnarray}
 \nabla^{2}g(x,y) = \frac{\delta^{2}g(x,y)}{\delta x^{2}} + \frac{\delta^{2}g(x,y)}{\delta y^{2}}
@@ -72,29 +93,27 @@ Laplacián je aproximován diskrétní konvolucí. Příklad konvolučního jád
 %VLOZIT STHINNINH AND SHRINKING
 
 \subsection{Rozpoznávání postav}
-Možnosti:
+Existuje mnoho přístupů k implementaci detekce postav z obrazu, mezi hlavní možnosti patří:
+\begin{itemize}
 
-podle tvaru
+
+\item podle tvaru
 \begin{itemize}
 \item na základě modelu
-
-
 \item na základě prvků
-
 \item strojově naučené programy
 \item neuronové sítě %-radial basis funkction
 \item transformační matice vzdálenostních funkcí (chamfer)
 \end{itemize}
-
-podle barvy
+\item podle barvy
 \begin{itemize}
 \item strojově naučené programy\\
 \end{itemize}
+\end{itemize}
 
+Jednou z metod je dle Ch. Nakajima a spol.~\cite{6} ukládání několika obrázků, z nichž se detekuje pohybující se objekt a vše, co se nehýbe, se označí jako pozadí a ignoruje. Následně se naleznou kraje možné postavy, aby se vylepšil výsledek a vymazal šum. Pokud se jedinec pohybuje v druhém kroce, oříznutí probíhá z posledního získaného obrazu. Pokud nebyl detekován žádný jedinec, tak se do paměti uloží pozadí, které se z následujících obrazů rovnou vymaže pro větší přesnost. K vlastní identifikaci se používá SVM (support vector machines) a k-NN klasifikátor.\\
 
-Jednou z metod je dle Ch. Nakajima a spol.~\cite{6} ukládání několika obrázků, z nichž se detekuje pohybující se objekt a vše, co se nehýbe se označí za pozadí a ignoruje. Následně se naleznou kraje možné postavy, aby se vylepšil výsledek a vymazal šum. Pokud se jedinec pohybuje v druhém kroce, oříznutí probíhá z posledního získaného obrazu. Pokud nebyl detekován žádný jedinec, tak se do paměti uloží pozadí, které se z následujících obrazů rovnou vymaže pro větší přesnost. K vlastní identifikaci se použila SVM (support vector machines) a k-NN klasifikátor.\\
-
-Hussein a spol.~\cite{9}používají k rozpoznání postavy prohledávání obrazu a porovnávání siluet s databází, ve které jsou vzory lidských postav. Shoda je detekována pomocí zkosením objektů. Vzory jsou ve formě binárního obrazu. Vzdálenost D mezi vzorem V a objektem z obrazu O se počítá vzorcem\\
+Hussein a spol.~\cite{9} rozpoznávají postavy tím, že prohledají obraz a porovnají siluety s databází, ve které jsou vzory lidských postav ve formě binárního obrazu. Shoda je detekována pomocí zkosením objektů. Vzdálenost D mezi vzorem V a objektem z obrazu O se počítá vzorcem\\
 
 \begin{eqnarray}
  D(O,V) = \frac{1}{|V|}\sum_{i}^{}C_{i}V_{i}   ,
@@ -103,18 +122,18 @@ Hussein a spol.~\cite{9}používají k rozpoznání postavy prohledávání obra
 kde |V| je počet pixelů v siluetě ve vzoru, $ T_{i} $ je hodnota pixelu $ i $ ve vzoru a $ C_{i} $ je rozdíl zkosení pixelu $ i $ v obraze. Čím menší hodnota mezi vzorem a obrazem, tím lepší shoda je detekována.
 %// (patří do nového odstavce?)
 
-Nalezení podobnosti zkosením předpokládá již nalezené hrany objektů v obraze. Vzor se překryje co nejvíce na objekt a transformací bodů jednoho objektu pomocí parametrických transformačních rovnic.\\
+Nalezení podobnosti zkosením předpokládá již nalezené hrany objektů v obraze. Vzor se překryje s objektem a transformací bodů jednoho objektu pomocí parametrických transformačních rovnic.\\
 
-Jiný přístup poskytuje nalezení objektu v zorném poli pomocí hloubkové kamery, následným rozhodnutím, zda objekt má lidské nohy, nebo aspoň dva objekty odpovídající tvaru, a pokud ano, tak se přejde k dalšímu kroku, ve kterém se detekuje barva kůže z RGB vstupu. Nalezený výsledek slouží jako oblast k detekci obličeje, čímž je definitivně nalezen člověk~\cite{10}.\\
+Jiný přístup nalézá objektu v zorném poli pomocí hloubkové kamery. Následuje rozhodnutí, zda objekt má lidské nohy nebo aspoň dva objekty odpovídající tvaru, a pokud ano, tak se přejde k dalšímu kroku, ve kterém se detekuje barva kůže z RGB vstupu. Nalezený výsledek slouží jako oblast k detekci obličeje, čímž je nalezen člověk~\cite{10}.\\
 
-Gavrila ~\cite{7} se snaží snížit výpočetní náročnost tak, že nahrazuje procházení obrazu postupně schopností zaměřit se na jeden úryvek přímo a ve druhém kroce teprve hledá podobnosti tvarů. Dosahuje tak zpracování v reálném čase.
+Gavrila ~\cite{7} se snaží snížit výpočetní náročnost tak, že nahrazuje procházení obrazu postupně schopností zaměřit se na jeden úryvek přímo a ve druhém kroce teprve hledá podobnosti tvarů. Dosahuje tak zpracování bez časové prodlevy.
 %These pixel values form a distribution of distances of the template features to the nearest features in the image
 Shodu podle tvaru detekuje pomocí vzdálenosti křivek, která se počítá podobně jako u Hussein a spol.~\cite{9} 
 
 \begin{eqnarray}
  D(O,V) = \frac{1}{|V|}\sum_{t\in T}^{}d_{I}(t) ,
 \end{eqnarray}
-kde |V| je počet prvků ve vzoru a $ d_{I}(t) $ představuje vzdálenost daného prvku ve vzoru a odpovídajícímu v obraze. Pokud výsledná hodnota je menší než předem určená prahová hodnota, považuje se objekt v obraze za postavu. Detekce chodce podle vzoru lze pozorovat na obrázku 3. \\
+kde |V| je počet prvků ve vzoru a $ d_{I}(t) $ představuje vzdálenost daného prvku ve vzoru a odpovídajícímu v obraze. Pokud výsledná hodnota je menší než předem určená prahová hodnota, považuje se objekt v obraze za postavu. Detekce chodce podle vzoru lze pozorovat na obrázku~\ref{pic3}. \\
 %hlubší pozornost na předposlední odstavec na str. 4 !!!!
 \newpage
 \begin{figure}[h]
@@ -122,23 +141,26 @@ kde |V| je počet prvků ve vzoru a $ d_{I}(t) $ představuje vzdálenost danéh
 \includegraphics[width=0.6\linewidth]{pedestrian_detection.jpg}
 \caption{a) původní obraz b) vzor c) nalezené hrany d) vyobrazené vzdálenosti
 Převzato ~\cite{7} }
+\label{pic3}
 \end{figure}
-V rámci optimalizace se tato metoda (jak překládat chemfer matching system??) rozšiřuje na hierarchizovanou, která sdružuje podobné vzory do shluků a tudíž se prohledávání databáze zrychlí (viz obrázek 4).
+V rámci optimalizace se tato metoda (jak překládat chemfer matching system??) rozšiřuje na hierarchizovanou, která sdružuje podobné vzory do shluků a tudíž se prohledávání databáze zrychlí (viz obrázek~\ref{pic4}).
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.6\linewidth]{hier.jpg}
 \caption{Využití hierarchie v databázi vzorů. Převzato z ~\cite{7} }
+\label{pic4}
 \end{figure}
 \newpage
 
-Ověření výsledku probíhá RBF (radial basis functions) klasifikátorem. Nejdříve se z původního obrazu vybere čtyřúhelník obsahující možnou postavu a na základě euklidovské vzdálenosti určuje, jestli jednotlivé pixely jsou součástí postavy či nikoliv.\\
+Ověření výsledku probíhá pomocí RBF (radial basis functions) klasifikátorem. Nejdříve se z původního obrazu vybere čtyřúhelník obsahující možnou postavu a na základě euklidovské vzdálenosti určuje, jestli jednotlivé pixely jsou součástí postavy či nikoliv.\\
 %RBF classifier!
 
-Riggol a spol.~\cite{11} kombinují rozpoznávací metody založené na prvcích a na modelech za cílem dosažení spolehlivého a efektivního programu. Využívají P2DHMM (Pseudo-2D Hidden Markov Model). Jedná se o předem naučený algoritmus, který dokáže na základě pravděpodobností určit, jestli se jedná o postavu nebo ne. Příklad detekované postavy a postupné rozhodování je vidět na obrázku 5.\\
+Riggol a spol.~\cite{11} kombinují rozpoznávací metody založené na prvcích a na modelech za cílem dosažení spolehlivého a efektivního programu. Využívají P2DHMM (Pseudo-2D Hidden Markov Model). Jedná se o předem naučený algoritmus, který dokáže na základě pravděpodobností určit, jestli se jedná o postavu nebo ne. Příklad detekované postavy a postupné rozhodování je vidět na obrázku~\ref{pic5}.\\
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.5\linewidth]{P2DHMM.jpg}
 \caption{Stochastický model 2D objektu. Převzato z ~\cite{11} } %stochastic model of 2D object using P2DHMM
+\label{pic5}
 \end{figure}
 
 
@@ -147,15 +169,16 @@ Riggol a spol.~\cite{11} kombinují rozpoznávací metody založené na prvcích
 %	vzhledu (barva, tvar)\\ 
 %	naučené(learning based) -kNN,..\\
 %			-Haar cascades\\
-Ruka má 23 stupňů vlastností a v kombinaci s různým osvětlením a změnami v pozadí se jedná o značně komplikovaný problém na řešení pomocí podobnosti.\\
+Ruka má 23 stupňů volnosti a v kombinaci s různým osvětlením a změnami v pozadí se jedná o značně komplikovaný problém na řešení pomocí podobnosti.\\
 
-Jestliže aplikace nevyžaduje dynamické využití, lze použít rozdíl mezi objektem a pozadím~\cite{14}. Vyžaduje to co nejvíce neměnné pozadí a dostatečný rozdíl mezi objektem a zbytkem. Rozdíl lze hledat jednoduše procházením pole nebo využitím "chytrého" algoritmu. Spočívá v identifikaci čísti obrazu, která se hýbe oproti posledním obrazům. Příklad detekce ruky odstraněním pozadí je ukázán na obrázku 6.
+Jestliže aplikace nevyžaduje dynamické využití, lze použít rozdíl mezi objektem a pozadím~\cite{14}. Vyžaduje to co nejvíce neměnné pozadí a dostatečný rozdíl mezi objektem a zbytkem. Rozdíl lze hledat jednoduše procházením pole nebo využitím "chytrého" algoritmu. Spočívá v identifikaci části obrazu, která se hýbe oproti posledním obrazům. Příklad detekce ruky odstraněním pozadí je ukázán na obrázku~\ref{pic6}.
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=1\linewidth]{diff.jpg}
 \caption{a)vstup  b) referenční obraz  c)výstup 
 Převzato z ~\cite{14} } 
+\label{pic6}
 \end{figure}
 
 
@@ -165,11 +188,12 @@ Mezi rozpoznávání na základě vzhledu se řadí mnoho metod zahrnujících s
 Kim a spol.~\cite{5} používají bílé značky na špičkách prstů, které sledují černým světlem a detekují jednoznačně špičky prstů, což umožňuje velkou škálu možných gest. Na druhou stranu vzniká i omezení barvy pozadí, které lze eliminovat jen v určitém prostředí, tudíž se jedná o vhodnou variantu k využití při hrách ve VR (virtuální reality).\\
 
 Shaker a Zliekha ~\cite{12} získávají směr prstu na ruce, kterou snímají dvěma kamerami. Jedna kamera natáčí shora, zatímco druhá zboku. Oba vstupy se zpracovávají zvlášť do rozpoznávání gesta. Nejdříve přepočítají obraz na stupně šedi a poté dle určené prahové hodnoty odfiltruje pozadí a vytvoří binární obraz. V tomto kroce je třeba, aby bylo pozadí jednoduché a jasně rozlišitelné od ruky. Kvůli odstranění šumu se obrázek rozmaže a následně zaostří. V tomto kroce vzniká podmínka, že největší objekt v obraze je právě ruka. Poté se pomocí Laplaciána získají hrany daného objektu a z něj se vytvoř kontury.
-Gesto se identifikuje pomocí nalezení největšího vrcholu v obraze a nalezení čáry, kterou opisuje natažený prst a následnou kombinací obou směrů do 3D. Postup je znázorněný na obrázku 7.
+Gesto se identifikuje pomocí nalezení největšího vrcholu v obraze a nalezení čáry, kterou opisuje natažený prst a následnou kombinací obou směrů do 3D. Postup je znázorněný na obrázku~\ref{pic7}.
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.5\linewidth]{ShZl.jpg}
 \caption{Popis algoritmu. Převzato z ~\cite{12} } 
+\label{pic7}
 \end{figure}
 
 \subsubsection{Rozpoznávání prstů}
@@ -187,7 +211,7 @@ Mezi další programy rozpoznávající špičky prstů z již relativně čist�
 \includegraphics[width=0.5\linewidth]{fingers.png}
 \caption{Vyobrazení definovaných pojmů, které lze využít k výpočtům pozic, na základě proporcionálních vlastností prstů.
 Převzato z ~\cite{13} }
-
+\label{pic8}
 \end{figure}
 \begin{center}
 $RC_{angle} = 90 - tan^{-1} \frac{y_{r}-y_{pc}}{x_{r} - x_{pc}}$ \\
@@ -228,7 +252,7 @@ Další možnosti se nabízí i při procházení záznamů pacienta při operac
 
 //cite{22} preliminary investigation of movement
 
-\subsubsection{Bixi}
+\subsubsection{Ovladač Bixi}
 Bixi je bezdotykový ovladač k mobilnímu zařízení. Hlavním zaměřením je usnadnění ovládání vedlejších aplikací během řízení auta tak, aby se řidič mohl soustředit na provoz. Po spárování se zařízením pomocí bluetooth lze gesty volit adresu pro navigaci, ztlišit či zastavit hudbu, ztlumit jas obrazovky, přijímat hovory a jiné~\cite{bixi}.
 
 \subsubsection{DJI drony}
