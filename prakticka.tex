@@ -244,6 +244,8 @@ Funkce findFingerTips3 si ukládá souřadnice, na kterých byly detekovány prs
 \subsubsection{Čtvrtá metoda}
 Další implementovaná možnost nalezení konců prstů spočívá v procházení oblasti, ve které se nachází prsty. Hledání začíná u vnější strany a jakmile se narazí na pixel patřící objektu, uloží se jeho pozice a souřadnice se zapíše do pomocného pole. Pole obsahuje souřadnice, na kterých se nachází již nalezené prsty a navíc jejich okolí, ve kterých se stále jedná o ten stejný prst. Při následujícím nalezení pixelu patřícího k objektu se tedy nejdříve zkontroluje, jestli se nejdná o kolizi z pohledu již nalezených prstů.
 
+\subsection{Indetifikace prstů}
+Index prstu se přidělí podle pozice špičky prstů vzhledem ke středu dlaně viz obrázek~\ref{pic20}. Jelikož není známo, jakým směrem je ruka natočena ke kameře, není identifikovatelné, jestli se jedná o malíček nebo ukazováček. Indexy tedy představují pouze pozici prstu.
 
 \section{Statistika}
 Vyhodnocení funkčnosti a použitelnosti navržených metod.
