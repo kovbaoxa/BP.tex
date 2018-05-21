@@ -69,6 +69,12 @@ nebo geometrická podmínka, která vynucuje umístění kostry uprostřed objek
 Detekce ze vzdálenostní mapy lze popsat třemi kroky. Nejdříve se v binárním obraze označí hraniční body objektu. Potí se vygeneruje vzdálenostsní mapa podle toho, jak daleko se nachází konkrétní pixel od nejbližšího hraničního bodu. Jako hrany kostry se označí pixely, které jsou lokíálními maximy.
 
 Voronoiovy diagramy dělí prostor na části podle množiny bodů tak, aby se v každé části nacházel právě jeden bod. Do množiny bodů se přidá část hraničních bodů objektu. Sousedící okraje částí tvoří kostru. Čím více bodů množina obsahuje, tím přesnější kostra bude.
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\linewidth]{hand_voi.eps}
+\caption{TODO}
+\label{picVoi}
+\end{figure}
 
 Ztenčování je proces, při kterém se opakovaně odstraňují pixely, dokud se v obraze vyskytují pixely, jejichž odstranění neporušuje podmínky. Podmínky se mohou lišit podle toho, k jakým účelům je algoritmus používán.
 
@@ -188,10 +194,11 @@ Kim a spol.~\cite{5} používají bílé značky na špičkách prstů, které s
 
 Shaker a Zliekha ~\cite{12} získávají směr prstu na ruce, kterou snímají dvě kamery. Jedna kamera natáčí shora zatímco druhá zboku. Gesto se rozpoznává z každého vstupu zvlášť. Nejdříve přepočítají obraz na stupně šedi a poté dle určené prahové hodnoty odfiltruje pozadí a vytvoří binární obraz. V tomto kroce je třeba, aby bylo pozadí jednoduché a jasně rozlišitelné od ruky. Kvůli odstranění šumu se obrázek rozmaže a následně zaostří. Je důležité, aby byla ruka největší objekt v obraze. Poté se pomocí Laplaciána získají hrany daného objektu a z nich se vytvoří kontury.
 Gesto se identifikuje pomocí nalezení největšího vrcholu v obraze a nalezení čáry, kterou opisuje natažený prst a následnou kombinací obou směrů do 3D. Postup je znázorněný na obrázku~\ref{pic7}.
+
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.5\linewidth]{ShZl.jpg}
-\caption{Popis algoritmu. Převzato z ~\cite{12} } 
+\includegraphics[width=0.4\linewidth]{pic7.eps}
+\caption{Popis algoritmu. Přeloženo a převzato z ~\cite{12} } 
 \label{pic7}
 \end{figure}
 
