@@ -1,5 +1,5 @@
 \chapter{Implementace rozpoznávání gest}
-Následné algoritmy byly testovány na Kinectu v2 pomocí projectGeneratoru od openFrameworks. Program má i vývojové prostředí, ze kterého to lze spouštět. V přiloženém README.txt bude uveden postup pro generátor pomocí příkazové řádky.
+Následné algoritmy byly testovány na Kinectu v2 pomocí projectGeneratoru od openFrameworks. Program má i vývojové prostředí, ze kterého lze spoustit aplikaci. V přiloženém souboru bakalářské práce README.txt je uveden postup pro generátor pomocí příkazové řádky.
 
 \section{Software}
 \subsection{openFramworks}
@@ -8,7 +8,7 @@ Využívá se doplněk ofxKinectV2~\cite{2}. Oproti zabudovanému ofxKinect je o
 
 Kód v openFrameworks se dělí do třech hlavních částí. Jedná se o setup(), update() a draw(). Sekce setup slouží pro počáteční nastavení programu, proměnných apod., update obsahuje výpočetní a aktualizační část a draw má na starosti vykreslování.
 
-Program se snaží vykonávat všechny části tak často, jak to lze. V update i draw se může využít funkce ofGetElapsedTimef(), která vrací vteřiny v jednotkách float od spuštění programu nebo ofGetElapsedTimeMilis(), která vrací milisekudny od resetování čítače. Pomocí využití modulo funkce (i jiných) můžeme ovlivnit jak často se bude vykonávat každá aktualizační část nebo její podčást, jelikož lze předpokládat, že člověk nemění gesta rychleji, než je počítač zpracovává. Omezení snímků určených ke zpracování programem lze povést i pomocí funkce isFrameNew(), která vrací boolean hodnotu určující, jestli se snímek změnil či nikoliv.
+Program se snaží vykonávat všechny části tak často, jak to lze. V update i draw se může využít funkce ofGetElapsedTimef(), která vrací vteřiny v desetinné přesnosti od spuštění programu nebo ofGetElapsedTimeMilis(), která vrací milisekundy od resetování čítače. Jelikož lze předpokládat, že člověk nemění gesta rychleji, než je počítač zpracovává, tak můžeme využít funkci modulo (i jiných) a ovlivnit jak často se bude vykonávat každá aktualizační část nebo její podčást. Omezení snímků určených ke zpracování programem lze povést i pomocí funkce isFrameNew(), která vrací binární hodnotu určující, jestli se snímek změnil či nikoliv.
 
 % %\subsection{Měření času v OF}
 %timeStart = ofGetElapsedTimef();
@@ -18,13 +18,13 @@ Program se snaží vykonávat všechny části tak často, jak to lze. V update 
 
 \section{Hardware}
 \subsection{Kamera Kinect}
-K implementaci této práce je využita kamera Kinect v2. Zdroje, ze kterých lze data využít k potřebám aplikace jsou RGB kamera s rozlišením 1920 x 1080 pixelů a kamera na snímání hloubky s rozlišením 512 x 424 pixelů.
+K implementaci této práce byla využita kamera Kinect v2. Zdroje, ze kterých lze data využít k potřebám aplikace jsou RGB kamera s rozlišením 1920 x 1080 pixelů a kamera na snímání hloubky s rozlišením 512 x 424 pixelů.
 
-Jedná se o relativně levnou a dostupnou kameru, která se v době zpracování této práce (začátek roku 2018) dá pořídit do tří tisíc korun.
+Jedná se o relativně levnou a dostupnou kameru, která se v době zpracování této práce (začátek roku 2018) dala pořídit do tří tisíc korun.
 
 \section{Zpracovatelné vstupy}
 
-Obě kamery mohou poskytovat užitečné informace pro účely projektu. RGB kamera nabízí pole pixelů, kde každý má složky RGB (0 až 255). Lze využít v kombinaci s robustním programem, který by na základě barvy, tvarů a dalších vylučovacích prvků správně detekoval nejdříve ruku a poté i gesta. Jedná se o znatelně náročnější způsob.
+Obě kamery poskytují užitečné informace pro účely projektu. RGB kamera nabízí pole pixelů, kde každý má složky RGB s hodnotami v intervalu 0 až 255. Lze využít v kombinaci s robustním programem, který by na základě barvy, tvarů a dalších vylučovacích prvků správně detekoval nejdříve ruku a poté i gesta. Jedná se o znatelně náročnější způsob.
 
 Hloubková kamera poskytuje pole s hodnotami 0 až 255 dle vzorce pro výpočet vzdálenosti na základě doby letu infračerveného světla. Stupnice hodnot je klesající, to jest nejbližší objekty mají hodnotu 255. Ve vzdálenosti 3 metry hodnoty klesnou na 150. 
 
@@ -36,10 +36,9 @@ Hloubková kamera poskytuje pole s hodnotami 0 až 255 dle vzorce pro výpočet 
 \label{pic9}
 \end{figure}
 
-Minimální vzdálenost pro správné měření vzdálenosti je 0.5 m a maximální 4.5 m. Při větší vzdálenosti bude Kinect stále ještě detekovat věci v zorném poli, ale bude poskytovat nepřesná data a hloubková kamera pozbydu užitku. Velký vliv má i rozlišení, které je pro velké vzdálenosti nedostačující. V dálce 5 m od kamery je rozlišení 7 cm.
+Minimální vzdálenost pro správné měření vzdálenosti je 0.5 m a maximální 4.5 m. Při větší vzdálenosti bude Kinect stále ještě detekovat věci v zorném poli, ale bude poskytovat nepřesná data a hloubková kamera pozbydu užitku. Velký vliv má i rozlišení, které je pro velké vzdálenosti nedostačující. V dálce 5 m od kamery je rozlišení 7 cm.\\
 
-Využitelné parametry:
-
+Měřené vlastnosti prostředí:
 \begin{itemize}
 \item Vzdálenost od kamery
 \item Vzdálenost mezi pixely
@@ -53,7 +52,7 @@ Výstupem z RGB kamery je dvoudimenzonální pole se třemi hodnotami jednotliv�
 \subsection{Hloubkové video}
 Zpracování hodnot z hloubkové kamery je jednodušší, už jenom protože se jedná o jednodimenzionální pole s hodnotami. Prahování (tresholding) se pak provádí jednoduchým porovnáním hodnot a vytvoření binárního obrazu je rychlejší.
 
-Nedostatky vyplývající z využití pouze hloubkové kamery spočívají hlavně v tom, že pokud je v záběru objekt , který má podobnou stavbu a strukturu jako je ruka, tak je mylně detekován a zpracováván.
+Nedostatky vyplývající z využití pouze hloubkové kamery spočívají hlavně v tom, že pokud je v záběru objekt , který má podobnou stavbu a strukturu jako je ruka, tak je mylně detekován a zpracováván.\\
 
 Doporučený postup by měl sestávat ze čtyř částí:
 
@@ -65,22 +64,22 @@ Doporučený postup by měl sestávat ze čtyř částí:
 \end{enumerate}
 
 \subsubsection{Úvodní nastavení}
-Lze zde dát uživateli na vědomí podmínky interakce s kamerou. Například pozice ruky musí být v prostřední třetině. Alternativou může být počáteční umístění ruky doprostřed kamery, aby mohla dále vycházet z umístění za využívání historie nebo aby se zkrátila doba hledání ruky. V této aplikaci je nejen počátečná podmínkou, že ruka musí být nejbližší objekt před kamerou.
+Lze zde dát uživateli na vědomí podmínky interakce s kamerou. Například pozice ruky musí být v prostřední třetině. Alternativou může být počáteční umístění ruky doprostřed kamery, aby mohla dále vycházet z umístění za využívání historie nebo aby se zkrátila doba hledání ruky. V této aplikaci je nejen počáteční podmínkou, že ruka musí být nejbližší objekt před kamerou.
 
 \subsubsection{Nalezení ruky}
-Jedná se o prostor pro určení podmínek a způsobu vyhledávání ruky. Tato část rozhoduje o robustnosti kódu a využitelnosti aplikace. Je vhodné nejdříve odstranit nulové a jinak nevyhovující pixely, vyplnit díry v obraze a počítat s dalšími chybami hardwaru a vlivy okolí. Pokud má být aplikace využívaná v jakkoliv náročnějším okolí, musí obsahovat i vyloučení veškerých nevyhovujícíh objektů, jako jsou věci podobného tvaru či případně cizí ruce. Při využívání pouze czdáleností a úhlů jednotlivých pixelů se těžko zahrnují všechny možnosti a způsoby provedení gesta. Jelikož mají lidé různé dispozice rukou, to co je pro jednoho normální, může kazit správnou detekci ruky jiného jedince.
+V této části je prostor pro určení podmínek a způsobu vyhledávání ruky. Tato část rozhoduje o robustnosti kódu a využitelnosti aplikace. Je vhodné nejdříve odstranit nulové a jinak nevyhovující pixely, vyplnit díry v obraze a zahrnout další chyby hardwaru a vlivy okolí. Pokud má být aplikace využívaná v náročnějším okolí, musí obsahovat i vyloučení veškerých nevyhovujícíh objektů, jako jsou věci podobného tvaru či cizí ruce. Při využívání pouze vzdáleností a úhlů jednotlivých pixelů se těžko zahrnují všechny možnosti a způsoby provedení gesta. Jelikož mají lidé různé proporce a tvar rukou, to co je pro jednoho normální, může kazit správnou detekci ruky jiného jedince.
 
 Předpoklad pro následující text je zpracování videa ohledně nulových pixelů. Měly by být ignorovány v rámci chybného vstupu. Zároveň platí, že čím více podmínek se uživateli na začátku předloží, tím jednodušší je nalezení ruky. 
 
-U správně ukazovaného gesta se dá předpokládat stejná vzdálenost jednotlivých bodů od kamery. Mírné odchylky se dají buď zahrnout offsetem, který rozdíly v určitém rozmezí bude považovat za ekvivalentní. nebo vyloučit úplně, jelikož se dá předpokládat, že to nebude mít vliv na zpracování, pokud se jedná o krajní body. Aby byl program uživatelsky přívětivý, v programu je zvolena odchylka na zachycení těchto rozdílů.
+U správně ukazovaného gesta lze předpokládat stejná vzdálenost jednotlivých bodů od kamery. Mírné odchylky se dají buď zahrnout offsetem, který rozdíly v určitém rozmezí bude považovat za ekvivalentní. nebo vyloučit úplně, jelikož se dá předpokládat, že to nebude mít vliv na zpracování, pokud se jedná o krajní body. Aby byl program uživatelsky přívětivý, v programu je zvolena odchylka na zachycení těchto rozdílů.
 
-V tomto programu se vychází z předem definované vzdálenosti, ve které je nalezen největší možný čtverec, který by představoval dlaň. Pro účely nalezení by muselo existovat pole pixelů, které by reprezentovalo dlaň, či případně podobný objekt, který by se následně vyloučil podle dalších kritérií. Nadále by byla dlaň definovaná středem nalezeného čtverce a šířkou.
+V této bakalářské práci se vychází z předem definované vzdálenosti, ve které je nalezen největší možný čtverec, který by představoval dlaň. Pro účely nalezení musí existovat pole pixelů, které by reprezentovalo dlaň, či případně podobný objekt, který by se následně vyloučil podle dalších kritérií. Nadále je dlaň definovaná středem nalezeného čtverce a šířkou.
 
-Následuje vylučování mylných objektů podle toho, jak robustní program má být a v jak obtížném prostředí bude detekce probíhat. Tato část je předmětem budoucích rozšíření, jelikož se jedná o komplexní problematiku.
+Následuje vylučování mylných objektů podle toho, jak robustní program má být a v jak obtížném prostředí bude detekce probíhat. V této bakalářské práci se na vylučování neklade velký důraz, jelikož se jedná o komplexní problematiku. Nalezení ruky je rozdělené na jednotlivé úkoly a proto se modul vylučování může snadno upravovat a rozšiřovat v závislosti na složitosti konkrétní skutečné aplikace.
 
-Nutnou podmínkou ruky je, že obsahuje prsty, které mají proporcionálně ke dlani určitou velikost a vzdálenost od středu dlaně. Jelikož známe střed nalezené dlaně, lze identifikovat i prsty, respektive konečky prstů. Ze začátku musí být známo jaké gesto bude ruka zobrazovat při inicializaci, aby se dala nalézt. Pro ilustraci bude rozebráno gesto se všemi prsty nataženými. 
+V rámci bakalářské práce je ruka definována tím, že obsahuje prsty, které mají proporcionálně ke dlani určitou velikost a vzdálenost od středu dlaně. Jelikož známe střed nalezené dlaně, lze identifikovat i prsty, respektive konečky prstů. Ze začátku musí být známo jaké gesto bude ruka zobrazovat při inicializaci, aby se dala nalézt. Pro ilustraci bude rozebráno gesto se všemi prsty nataženými. 
 
-Nejjednodušší metodou je nalezení lokálních maxim po šíři dlaně. Když se dlaň rozdělí na čtyři části a v každé se nalezne maximum po ose y (ose x pro horizontální polohu ruky), pro každý prst se změří vzdálenost špičky prstu od středu dlaně. Pokud se bude výrazně odchylovat od proporcí běžné ruky, bude nalezený objekt vyloučen.
+Nejjednodušší metodou je nalezení lokálních maxim po šíři dlaně. Když se dlaň rozdělí na čtyři části a v každé se nalezení lokálních extrémů po ose y (ose x pro horizontální polohu ruky), pro každý prst se změří vzdálenost špičky prstu od středu dlaně. Pokud se bude výrazně odchylovat od proporcí běžné ruky, bude nalezený objekt vyloučen.
 
 Rafinovanější programy využívají tvorbu skeletonu pro sledování a identifikaci jak postavy, tak i ruky. Jedná se o postup nalezení kostí a jejich kloubů, které jsou reprezentovány čárami, což pak reprezentuje ruku (případně tělo). Jedná se o možný, ale náročnější a zdlouhavější postup.
 

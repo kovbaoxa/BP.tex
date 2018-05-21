@@ -187,7 +187,7 @@ Mezi rozpoznávání na základě vzhledu se řadí mnoho metod zahrnujících s
 
 Kim a spol.~\cite{5} používají bílé značky na špičkách prstů, které sledují černým světlem a detekují jednoznačně špičky prstů, což umožňuje velkou škálu možných gest. Na druhou stranu vzniká i omezení barvy pozadí, které lze eliminovat jen v určitém prostředí, tudíž se jedná o vhodnou variantu k využití při hrách ve VR (virtuální reality).\\
 
-Shaker a Zliekha ~\cite{12} získávají směr prstu na ruce, kterou snímají dvěma kamerami. Jedna kamera natáčí shora, zatímco druhá zboku. Oba vstupy se zpracovávají zvlášť do rozpoznávání gesta. Nejdříve přepočítají obraz na stupně šedi a poté dle určené prahové hodnoty odfiltruje pozadí a vytvoří binární obraz. V tomto kroce je třeba, aby bylo pozadí jednoduché a jasně rozlišitelné od ruky. Kvůli odstranění šumu se obrázek rozmaže a následně zaostří. V tomto kroce vzniká podmínka, že největší objekt v obraze je právě ruka. Poté se pomocí Laplaciána získají hrany daného objektu a z něj se vytvoř kontury.
+Shaker a Zliekha ~\cite{12} získávají směr prstu na ruce, kterou snímají dvě kamery. Jedna kamera natáčí shora zatímco druhá zboku. Gesto se rozpoznává z každého vstupu zvlášť. Nejdříve přepočítají obraz na stupně šedi a poté dle určené prahové hodnoty odfiltruje pozadí a vytvoří binární obraz. V tomto kroce je třeba, aby bylo pozadí jednoduché a jasně rozlišitelné od ruky. Kvůli odstranění šumu se obrázek rozmaže a následně zaostří. Je důležité, aby byla ruka největší objekt v obraze. Poté se pomocí Laplaciána získají hrany daného objektu a z nich se vytvoří kontury.
 Gesto se identifikuje pomocí nalezení největšího vrcholu v obraze a nalezení čáry, kterou opisuje natažený prst a následnou kombinací obou směrů do 3D. Postup je znázorněný na obrázku~\ref{pic7}.
 \begin{figure}[h]
 \centering
@@ -200,11 +200,11 @@ Gesto se identifikuje pomocí nalezení největšího vrcholu v obraze a nalezen
 Hackenberg a spol.~\cite{12} implementovali identifikaci prstů a dlaně na základě několika kroků. Nejprve projde hloubkový obraz z kamery a hledá tvary podobné špičkám prstů nebo rourovitého tvaru podobného prstům. Poté se zaměří na detailnější vlastnosti dlaně. Z nalezených vhodných polí, která mohou představovat dlaně se vyřadí ta, která nejsou napojena nijak na prsty, jsou menší než předem určená hodnota (odvozená od průměrně velikosti hlavy) a vzdáleností špiček prstů od dlaně.\\
 
 
-Bez potřeby porovnávání tvarů a zdrojů se dají rozpoznat jednotlivé špičky prstů pomocí nalezení lokálního maxima v obrysu ruky. Ve všech adekvátních směrech se naleznou kandidáti a následně vyloučí mylné identifikace. Jedná se ale o postup náchylný k šumu v obraze, podobná metoda odolnější navrhuje porovnávání vzdálenosti obrysu k pozici ruky~\cite{3}.\\
+Bez potřeby porovnávání tvarů a zdrojů se dají rozpoznat jednotlivé špičky prstů pomocí nalezení lokálního maxima v obrysu ruky. Ve všech adekvátních směrech se naleznou kandidáti a následně vyloučí mylné identifikace. Jedná se o postup náchylný k šumu v obraze, podobná odolnější metoda navrhuje porovnávání vzdálenosti obrysu k pozici ruky~\cite{3}.\\
 Jednotlivé prsty lze rozpoznat například pomocí vyhledávání na základě tvaru~\cite{4}. Jde o zjednodušení představy objektu na geometrický objekt a vyhledávání vhodných kandidátů v obraze. 
 %obrázek figertip jako geometrického objektu ze zdroje?
 
-Mezi další programy rozpoznávající špičky prstů z již relativně čistého čtyřúhelníku, který obsahuje zájmový objekt, patří identifikace na základě dvou specifických vlastností. Centrum špičky je obklopen kolem pixelů patřící prstu a ten je obklopen dlouhou řadou pixelů nepatřících prstu~\cite{14}. Ruce lze identifikovat i až po prstech a to tak, že se vyloučí objekty podobného tvaru (propisky, fixy), které nesplňují vlastnosti rukou, například nepatří k žádné dlani.
+Mezi další programy rozpoznávající špičky prstů z již relativně čistého čtyřúhelníku, který obsahuje zájmový objekt, patří identifikace na základě dvou specifických vlastností. Střed špičky prstu je obklopen pixely patřící prstu a ty jsou obklopeny dlouhou řadou pixelů nepatřících prstu~\cite{14}. Ruce lze identifikovat i po nalezení prstů tím, že se vyloučí objekty podobného tvaru (propisky, fixy), které nesplňují vlastnosti rukou, například nejsou napojeny na žádnou dlaň.
 
 \begin{figure}[h]
 \centering
@@ -219,7 +219,7 @@ $TC_{angle} = 90 - tan^{-1} \frac{y_{ft}-y_{pc}}{x_{ft} - x_{pc}}$
 \end{center}
 \newpage
 \section{Aktuální aplikace}
-\subsection{Možnosti využití gest při ovládání mobilního robotu}
+\subsection{Možnosti využití gest při ovládání mobilního robota}
 Všechny aplikace, které mohou využít výhod~\cite{14}:
 \begin{itemize}
 \item Ovládání na velmi malém prostoru
@@ -229,14 +229,14 @@ Všechny aplikace, které mohou využít výhod~\cite{14}:
 \item Potenciál zabezpečení proti zneužití (při implementaci ochranných prvků)
 \item Minimalistické (méně tlačítek a obdobných prvků)\\
 \end{itemize}
-Potenciál pro využití v:
+Potenciál pro využití:
 \begin{itemize}
 \item Překlad znakové řeči
 \item Ovládání chytrých zařízení (chytrá domácnost - světla, hudba, televize, telefon)
 \item Prezentace před publikem (ovládání počítače)
 \\
 \end{itemize}
-Již využíváno v:
+Již využíváno:
 \begin{itemize}
 \item Rozpoznání chodce v dohledu vozidla
 \item Sociální experimenty (vyslání robota stopovat)
@@ -247,8 +247,8 @@ Již využíváno v:
 \subsubsection{Rehabilitace}
 Mezi využítí v lékařské oblasti patří převážně rehabilitační cvičení. V nemocnici ve městě Reading využívají kameru Kinect pacienti po mrtvici na zlepšení pohyblivosti a koordinace~\cite{21}. 
 
-\subsubsection{UI během operace}
-Další možnosti se nabízí i při procházení záznamů pacienta při operaci, aniž by se kdokoliv dotýkal nesterilních věcí. Další možností se nabízí i na operačním sále, když chce doktor přístup k záznamům pacienta a nemusí se tak dotýkat žádných nesterilních věcí ~\cite{24}.\\
+\subsubsection{Uživatelské rozhraní během operace}
+Další možností se nabízí i na operačním sále, když chce doktor přístup k záznamům pacienta a nemusí se tak dotýkat žádných nesterilních věcí ~\cite{24}.\\
 
 //cite{22} preliminary investigation of movement
 
