@@ -95,15 +95,13 @@ Laplacián je aproximován diskrétní konvolucí. Příklad konvolučního jád
 \subsection{Rozpoznávání postav}
 Existuje mnoho přístupů k implementaci detekce postav z obrazu, mezi hlavní možnosti patří:
 \begin{itemize}
-
-
 \item podle tvaru
 \begin{itemize}
 \item na základě modelu
 \item na základě prvků
 \item strojově naučené programy
 \item neuronové sítě %-radial basis funkction
-\item transformační matice vzdálenostních funkcí (chamfer)
+\item transformační matice vzdálenostních funkcí ~\cite{Cham}
 \end{itemize}
 \item podle barvy
 \begin{itemize}
@@ -142,8 +140,9 @@ kde |V| je počet prvků ve vzoru a $ d_{I}(t) $ představuje vzdálenost danéh
 \caption{a) původní obraz b) vzor c) nalezené hrany d) vyobrazené vzdálenosti
 Převzato ~\cite{7} }
 \label{pic3}
-\end{figure}
-V rámci optimalizace se tato metoda (jak překládat chemfer matching system??) rozšiřuje na hierarchizovanou, která sdružuje podobné vzory do shluků a tudíž se prohledávání databáze zrychlí (viz obrázek~\ref{pic4}).
+\end{figure} 
+%tady je "tato metoda" místo chemfer matching system
+V rámci optimalizace se tato metoda rozšiřuje na hierarchizovanou, která sdružuje podobné vzory do shluků a tudíž se prohledávání databáze zrychlí (viz obrázek~\ref{pic4}).
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.6\linewidth]{hier.jpg}
@@ -152,7 +151,7 @@ V rámci optimalizace se tato metoda (jak překládat chemfer matching system??)
 \end{figure}
 \newpage
 
-Ověření výsledku probíhá pomocí RBF (radial basis functions) klasifikátorem. Nejdříve se z původního obrazu vybere čtyřúhelník obsahující možnou postavu a na základě euklidovské vzdálenosti určuje, jestli jednotlivé pixely jsou součástí postavy či nikoliv.\\
+Ověření výsledku probíhá pomocí RBF klasifikátorem (neuronová síť založená na radiálních bázových funkcích). Nejdříve se z původního obrazu vybere čtyřúhelník obsahující možnou postavu a na základě euklidovské vzdálenosti určuje, jestli jednotlivé pixely jsou součástí postavy či nikoliv.\\
 %RBF classifier!
 
 Riggol a spol.~\cite{11} kombinují rozpoznávací metody založené na prvcích a na modelech za cílem dosažení spolehlivého a efektivního programu. Využívají P2DHMM (Pseudo-2D Hidden Markov Model). Jedná se o předem naučený algoritmus, který dokáže na základě pravděpodobností určit, jestli se jedná o postavu nebo ne. Příklad detekované postavy a postupné rozhodování je vidět na obrázku~\ref{pic5}.\\
@@ -247,10 +246,11 @@ Již využíváno:
 \subsubsection{Rehabilitace}
 Mezi využítí v lékařské oblasti patří převážně rehabilitační cvičení. V nemocnici ve městě Reading využívají kameru Kinect pacienti po mrtvici na zlepšení pohyblivosti a koordinace~\cite{21}. 
 
-\subsubsection{Uživatelské rozhraní během operace}
-Další možností se nabízí i na operačním sále, když chce doktor přístup k záznamům pacienta a nemusí se tak dotýkat žádných nesterilních věcí ~\cite{24}.\\
+\subsubsection{Využití ve zdravotnictví}
+Kinect lze dobře využít jako uživatelské rozhraní během operace, když chce doktor přístup k záznamům pacienta a nemusí se tak dotýkat žádných nesterilních věcí ~\cite{24}.\\
 
-//cite{22} preliminary investigation of movement
+\subsubsection{Sport}
+Kamera Kinect se využila i v experimentu provedeném na univerzitě v Sarawaku~\cite{22}. Cílem experimentu bylo nalezení vztahu mezi tepem a pohyby hráče badmintonu. Kamera snímala hráče při hře a měřila preciznost jednotlivých úderů. Výsledkem bylo, že při zvýšeném tepu klesá podávaný výkon a tudíž lze lépe zamezit omdlévání při přetížení sportovců.
 
 \subsubsection{Ovladač Bixi}
 Bixi je bezdotykový ovladač k mobilnímu zařízení. Hlavním zaměřením je usnadnění ovládání vedlejších aplikací během řízení auta tak, aby se řidič mohl soustředit na provoz. Po spárování se zařízením pomocí bluetooth lze gesty volit adresu pro navigaci, ztlišit či zastavit hudbu, ztlumit jas obrazovky, přijímat hovory a jiné~\cite{bixi}.
