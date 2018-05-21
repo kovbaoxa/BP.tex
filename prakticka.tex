@@ -124,7 +124,7 @@ Velikost okolí by se měla vybrat empericky. Čím větší okolí, tím více 
 Pro manipulaci s nalezenými tvary a výpočty mezi jednotlivými body je snazší pracovat s binárním obrazem. Nejdříve se obraz projde a najde nejbližší objekt (největší hodnota). Díky předchozí filtraci nezkreslí tuto hodnotu žádný špatně naměřený pixel. Následně se již porovná každý jednotlivý pixel s hodnotou a vytvoří se pole s hodnotami 1 a 0.
 
 Jelikož lze předpokládat, že člověk nebude mít vždy ruku striktně kolmo k pohledu kamery, je záhodno odečíst od této hodnoty odchylku. Výsledná hodnota tedy záleží na tom, zda původní pixel byl blíže, než nejbližší objekt s ohledem na odchylku.\\
-Na obrázcích ~\ref{pic12},~\ref{pic13} a~\ref{pic14} lze pozorovat změny s ohledem na různé tolerance naklonění ruky. S odchylkou 10 vidíme, že ještě kus dlaně chybí, při odchylce 15 je s rukou načtený i znatelný kus předloktí a k tomu i nejednotný kus jiného objektu. Při toleranci pouze 12 je stále načteno moc pixelů a tak se jeví 10 jako nejvhodnější tolerance.\\
+Na obrázcích ~\ref{pic12},~\ref{pic13} a~\ref{pic14} lze pozorovat změny s ohledem na různé tolerance naklonění ruky. S odchylkou 10 vidíme, že ještě kus dlaně chybí, při odchylce 15 je s rukou načtený i znatelný kus předloktí a k tomu i nejednotný kus jiného objektu. Při toleranci pouze 12 je stále načteno moc pixelů a tak se jeví 10 jako nejlepší tolerance.\\
 
 \begin{figure}[htp]
 \centering
@@ -238,7 +238,7 @@ Další způsob zvyšuje použitelnost předchozí metody. Stále se prochází 
 
 %findFingerTips3
 \subsubsection{Třetí metoda}
-Funkce findFingerTips3 si ukládá souřadnice, na kterých byly detekovány prsty z předchozí kapitoly. Následně si dopočítá střed prstu a po přímce prohledává binární obraz tak daleko, dokud nenarazí na konec prstu (nulu v binárním obraze). 
+Funkce findFingerTips3 si ukládá souřadnice, na kterých byly detekovány prsty z předchozí kapitoly (detekce směru prstů). Následně si dopočítá střed prstu a po přímce prohledává binární obraz tak daleko, dokud nenarazí na konec prstu (nulu v binárním obraze). 
 
 %findFingerTips4
 \subsubsection{Čtvrtá metoda}
@@ -247,6 +247,7 @@ Další implementovaná možnost nalezení konců prstů spočívá v procházen
 
 \section{Statistika}
 Vyhodnocení funkčnosti a použitelnosti navržených metod.
+TODO
 
 \endinput
 %%
