@@ -66,17 +66,23 @@ Při hledání topologie a tvaru objektu lze použít například skeletonizaci.
 Jelikož lze nalézt pouze předpokládanou kostru objektu, jsou zde dva rozhodovací faktory. Požadavek zachování topologie %zaručuje  
 nebo geometrická podmínka, která vynucuje umístění kostry uprostřed objektu. Topologickou podmínku splňuje Voronojův diagram a ztenčování, geometrickou zaručuje detekce ze vzdálenostní mapy a Voronojova kostra.
 
-Detekce ze vzdálenostní mapy lze popsat třemi kroky. Nejdříve se v binárním obraze označí hraniční body objektu. Potí se vygeneruje vzdálenostsní mapa podle toho, jak daleko se nachází konkrétní pixel od nejbližšího hraničního bodu. Jako hrany kostry se označí pixely, které jsou lokíálními maximy.
-
-Voronoiovy diagramy dělí prostor na části podle množiny bodů tak, aby se v každé části nacházel právě jeden bod. Do množiny bodů se přidá část hraničních bodů objektu. Sousedící okraje částí tvoří kostru. Čím více bodů množina obsahuje, tím přesnější kostra bude.
+Detekce ze vzdálenostní mapy lze popsat třemi kroky. Nejdříve se v binárním obraze označí hraniční body objektu (zelené pixely na obrázku~\ref{distance}). Poté se vygeneruje vzdálenostní mapa podle toho, jak daleko se nachází konkrétní pixel od nejbližšího hraničního bodu. Hrany kostry reprezentují pixely, které jsou lokálními extrémy, ve výsledné vzdálenostní mapě.
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.6\linewidth]{hand_voi.eps}
-\caption{TODO}
+\includegraphics[width=0.8\linewidth]{distance.eps}
+\caption{Zelené pixely na levém obrázku označují hranice zpracovávaného objektu. Vůči nim se vypočítává vzdálenost zbylých pixelů, z nichž lokální maxima představují kostru. Výpočet probíhá pomocí čtyř sousedních pixelů. Vlastní zpracování.}
+\label{distance}
+\end{figure}
+
+Voronoiovy diagramy dělí prostor na části podle množiny bodů tak, aby se v každé oblasti nacházel právě jeden bod. Do množiny bodů se přidá část hraničních bodů objektu (červené body na obrázku~\ref{picVoi}). Sousedící okraje nalezených částí tvoří kostru. Čím více bodů množina obsahuje, tím přesnější kostra bude.
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.4\linewidth]{hand_voi.eps}
+\caption{Červené puntíky reprezentují zvolené body na kraji ruky. Zelené čáry zobrazují hranice sousedícíh oblastí. Vlastní zpracování.}
 \label{picVoi}
 \end{figure}
 
-Ztenčování je proces, při kterém se opakovaně odstraňují pixely, dokud se v obraze vyskytují pixely, jejichž odstranění neporušuje podmínky. Podmínky se mohou lišit podle toho, k jakým účelům je algoritmus používán.
+Ztenčování je proces, při kterém se opakovaně odstraňují pixely, dokud se v obraze vyskytují pixely, jejichž odstranění neporušuje předem definované podmínky. Podmínky se mohou lišit podle toho, k jakým účelům je algoritmus používán.
 
 \subsubsection{Detekce hran}
 K rozpoznávání v obraze lze dobře využít nalezených hran. Považovat za hrany lze místa, ve kterých se výrazně liší jas. K výpočtu hran se používá gradient, což je vektorová veličina určující směr a strmost největšího růstu funkce~\cite{hlav}.
@@ -101,24 +107,16 @@ Laplacián je aproximován diskrétní konvolucí. Příklad konvolučního jád
 \subsection{Rozpoznávání postav}
 Existuje mnoho přístupů k implementaci detekce postav z obrazu, mezi hlavní možnosti patří:
 \begin{itemize}
-\item podle tvaru
-\begin{itemize}
 \item na základě modelu
-\item na základě prvků
+\item na základě prvků (vlastností)
 \item strojově naučené programy
 \item neuronové sítě %-radial basis funkction
-\item transformační matice vzdálenostních funkcí ~\cite{Cham}
-\end{itemize}
-\item podle barvy
-\begin{itemize}
-\item strojově naučené programy\\
-\end{itemize}
+\item transformační matice vzdálenostní mapy ~\cite{Cham}\\
 \end{itemize}
 
 Jednou z metod je dle Ch. Nakajima a spol.~\cite{6} ukládání několika obrázků, z nichž se detekuje pohybující se objekt a vše, co se nehýbe, se označí jako pozadí a ignoruje. Následně se naleznou kraje možné postavy, aby se vylepšil výsledek a vymazal šum. Pokud se jedinec pohybuje v druhém kroce, oříznutí probíhá z posledního získaného obrazu. Pokud nebyl detekován žádný jedinec, tak se do paměti uloží pozadí, které se z následujících obrazů rovnou vymaže pro větší přesnost. K vlastní identifikaci se používá SVM (support vector machines) a k-NN klasifikátor.\\
 
-Hussein a spol.~\cite{9} rozpoznávají postavy tím, že prohledají obraz a porovnají siluety s databází, ve které jsou vzory lidských postav ve formě binárního obrazu. Shoda je detekována pomocí zkosením objektů. Vzdálenost D mezi vzorem V a objektem z obrazu O se počítá vzorcem\\
-
+Hussein a spol.~\cite{9} rozpoznávají postavy tím, že prohledají obraz a porovnají siluety s databází, ve které jsou vzory lidských postav ve formě binárního obrazu. Shoda je detekována pomocí zkosením objektů. Vzdálenost D mezi vzorem V a objektem z obrazu O se počítá vzorcem
 \begin{eqnarray}
  D(O,V) = \frac{1}{|V|}\sum_{i}^{}C_{i}V_{i}   ,
 \end{eqnarray}
@@ -128,7 +126,7 @@ kde |V| je počet pixelů v siluetě ve vzoru, $ T_{i} $ je hodnota pixelu $ i $
 
 Nalezení podobnosti zkosením předpokládá již nalezené hrany objektů v obraze. Vzor se překryje s objektem a transformací bodů jednoho objektu pomocí parametrických transformačních rovnic.\\
 
-Jiný přístup nalézá objektu v zorném poli pomocí hloubkové kamery. Následuje rozhodnutí, zda objekt má lidské nohy nebo aspoň dva objekty odpovídající tvaru, a pokud ano, tak se přejde k dalšímu kroku, ve kterém se detekuje barva kůže z RGB vstupu. Nalezený výsledek slouží jako oblast k detekci obličeje, čímž je nalezen člověk~\cite{10}.\\
+Jiný přístup nalézá objekt v zorném poli pomocí hloubkové kamery. Následuje rozhodnutí, zda objekt má lidské nohy nebo aspoň dva objekty odpovídající tvaru, a pokud ano, tak se přejde k dalšímu kroku, ve kterém se detekuje barva kůže z RGB vstupu. Nalezený výsledek slouží jako oblast k detekci obličeje, čímž je nalezen člověk~\cite{10}.\\
 
 Gavrila ~\cite{7} se snaží snížit výpočetní náročnost tak, že nahrazuje procházení obrazu postupně schopností zaměřit se na jeden úryvek přímo a ve druhém kroce teprve hledá podobnosti tvarů. Dosahuje tak zpracování bez časové prodlevy.
 %These pixel values form a distribution of distances of the template features to the nearest features in the image
@@ -139,14 +137,14 @@ Shodu podle tvaru detekuje pomocí vzdálenosti křivek, která se počítá pod
 \end{eqnarray}
 kde |V| je počet prvků ve vzoru a $ d_{I}(t) $ představuje vzdálenost daného prvku ve vzoru a odpovídajícímu v obraze. Pokud výsledná hodnota je menší než předem určená prahová hodnota, považuje se objekt v obraze za postavu. Detekce chodce podle vzoru lze pozorovat na obrázku~\ref{pic3}. \\
 %hlubší pozornost na předposlední odstavec na str. 4 !!!!
-\newpage
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.6\linewidth]{pedestrian_detection.jpg}
+\includegraphics[width=0.8\linewidth]{pedestrian_detection.jpg}
 \caption{a) původní obraz b) vzor c) nalezené hrany d) vyobrazené vzdálenosti
 Převzato ~\cite{7} }
 \label{pic3}
-\end{figure} 
+\end{figure}
+\newpage 
 %tady je "tato metoda" místo chemfer matching system
 V rámci optimalizace se tato metoda rozšiřuje na hierarchizovanou, která sdružuje podobné vzory do shluků a tudíž se prohledávání databáze zrychlí (viz obrázek~\ref{pic4}).
 \begin{figure}[h]
@@ -155,7 +153,6 @@ V rámci optimalizace se tato metoda rozšiřuje na hierarchizovanou, která sdr
 \caption{Využití hierarchie v databázi vzorů. Převzato z ~\cite{7} }
 \label{pic4}
 \end{figure}
-\newpage
 
 Ověření výsledku probíhá pomocí RBF klasifikátorem (neuronová síť založená na radiálních bázových funkcích). Nejdříve se z původního obrazu vybere čtyřúhelník obsahující možnou postavu a na základě euklidovské vzdálenosti určuje, jestli jednotlivé pixely jsou součástí postavy či nikoliv.\\
 %RBF classifier!
