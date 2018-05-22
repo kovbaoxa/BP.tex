@@ -218,7 +218,7 @@ Empiricky nalezená nejlepší hodnota pro $ offset\_palm $ je $ \frac{5}{7} $ �
 Všechny postupy se zakládají na prohledávání v okolí dlaně. Maximální délka prstů se odvozuje od nalezené velikosti dlaně. Prsty nesmí být ani příliš dlouhé ani příliš krátké.\\
 
 %findFingerTips
-\subsubsection{První metoda}
+\subsubsection{Nejvýše položený bod}
 Nejjednodušší postup spočívá v rozdělení strany, na které se nachází prsty, na čtyři části, kde každá náleží jednotlivým prstům. Rozdělení je rovnoměrné a nepodporuje tak extrémní odchylky. Celkový obdélník musí být širší než dlaň a nebere se v potaz, který prst je v daném obdélníku nalezen. To znamená, že pokud se ukazují dva prsty, přičemž se některý/oba nachází ve vedlejším obdélníku, zaznamená se správně pouze počet prstů.
 
 Jednotlivé části se následně procházejí a hledá se pixel, který ještě patří prstu a je nejvýše/nejníže dle orientace.\\
@@ -231,18 +231,18 @@ Jednotlivé části se následně procházejí a hledá se pixel, který ještě
 \end{figure}
 
 %findFingerTips2
-\subsubsection{Druhá metoda}
-Další způsob rozšiřuje využitelnost předchozí metody. Stále se prochází pole, ale celkový obdélník se předá v kuse a hledá se největší vzdálenost od středu dlaně. Stále platí omezení délky, tudíž je přesnější největší možná vzdálenost, která stále patří prstu.
+\subsubsection{Nejvzdálenější bod}
+Další způsob rozšiřuje využitelnost předchozí metody. Stále se prochází oblast, ve které byly detekovány prsty, ale celkový obdélník se předá v kuse a hledá se největší vzdálenost mezi nalezeným bodem a středem dlaně. Stále platí omezení délky, tudíž je přesnější největší možná vzdálenost, která stále patří prstu.
 
 %findFingerTips3
-\subsubsection{Třetí metoda}
+\subsubsection{Nejvzdálenější bod dle pozice prstu}
 Funkce findFingerTips3 si ukládá souřadnice, na kterých byly detekovány prsty z předchozí kapitoly (detekce směru prstů). Následně si dopočítá střed prstu a po přímce prohledává binární obraz tak daleko, dokud nenarazí na konec prstu (nulu v binárním obraze). 
 
 %findFingerTips4
-\subsubsection{Čtvrtá metoda}
+\subsubsection{Nejvzdálenější bod z povoleného okolí}
 Další implementovaná možnost nalezení konců prstů spočívá v procházení oblasti, ve které se nachází prsty. Oblast je vyznačena žlutě na obrázku~\ref{pic20}. Hledání začíná u vnější strany dané oblasti a jakmile se narazí na pixel patřící objektu, uloží se jeho pozice a souřadnice se zapíše do pomocného pole. Pole obsahuje souřadnice, na kterých se nachází již nalezené prsty a navíc jejich okolí, ve kterých se stále jedná o ten stejný prst. Při následujícím nalezení pixelu patřícího k objektu se tedy nejdříve zkontroluje, jestli se nejdná o kolizi z pohledu již nalezených prstů.
 
-\subsection{Indetifikace prstů}
+\subsection{Identifikace prstů}
 Index prstu se přidělí podle pozice špičky prstů vzhledem ke středu dlaně viz obrázek~\ref{pic20}. Jelikož není známo, jakým směrem je ruka natočena ke kameře, není identifikovatelné, jestli se jedná o malíček nebo ukazováček. Indexy tedy představují pouze pozici prstu.
 
 \section{Statistika}
