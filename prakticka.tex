@@ -75,7 +75,14 @@ V rámci bakalářské práce je ruka definována tím, že obsahuje prsty, kter
 
 Nejjednodušší metodou je nalezení lokálních maxim po šíři dlaně. Tyto metody jsou více rozberány v kapitole detekce prstů. Když se dlaň rozdělí na čtyři části a v každé se nalezení lokálních extrémů po ose y (ose x pro horizontální polohu ruky), pro každý prst se změří vzdálenost špičky prstu od středu dlaně. Pokud se bude výrazně odchylovat od proporcí běžné ruky, bude nalezený objekt vyloučen.
 
-Rafinovanější programy využívají tvorbu skeletonu pro sledování a identifikaci jak postavy, tak i ruky. Jedná se o postup nalezení kostí a jejich kloubů, které jsou reprezentovány čárami, což pak reprezentuje ruku (případně tělo). Jedná se o možný, ale náročnější a zdlouhavější postup.
+Sofistikovanější programy využívají tvorbu skeletonu pro sledování a identifikaci jak postavy, tak i ruky. Jedná se o postup nalezení kostí a jejich kloubů, které jsou reprezentovány čárami, což pak reprezentuje ruku (případně tělo). Jedná se o možný, ale náročnější a zdlouhavější postup.
+
+\begin{figure}[htp]
+\centering
+\includegraphics[width=.99\textwidth]{postup.eps}
+\caption{Postup nalezení ruky a identifikace gesta }
+\label{picPostup}
+\end{figure}
 
 \subsubsection{Identifikace gesta}
 Gesta se dělí na statická a dynmaická. Pro dynamická gesta je třeba udržovat si v paměti minulé stavy a stanovit dobu, po kterou by bylo přijatelné pro uživatele provádět gesto a zároveň  nemohlo být mylně identifikované. Nejjednodušší je identifikovat gesta statická, kde s využitím euklidovských vzdáleností lze vypočítat počet prstů, a tak v základní verzi bude prostor pro minimálně pět variant, pokud se pro zjednodušení vyloučí zavřená pěst. Program s implementovanou identifikací jednotlivých prstů poskytuje více variant, než by bylo potřeba, nebo by bylo zapamatovatelné pro uživatele.
@@ -175,7 +182,7 @@ V binárním obraze se vyhledá největší plný čtverec, který lze považova
 %\caption{b) výsledná matice}
 %\end{subfigure}
 \centering
-\caption{Nalezení největší jednotkové matice v binárním obraze.}
+\caption{Nalezení největší jednotkové matice v binárním obraze. Na levé mapě je binárního obrazu, na kterém se hledá největší plný čtverec (znázorněn zeleně). Vpravo na pomocné matici je detekován pravý dolní konec největšího čtverce (znázorněn oranžově) a jeho velikost je výsledná hodnota (velikost tři pixely). }
 \label{pic17}
 \end{figure}
 
