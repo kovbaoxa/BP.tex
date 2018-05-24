@@ -1,14 +1,14 @@
 \chapter{Implementace rozpoznávání gest}
-Následné algoritmy byly testovány na kameře Kinect v2 s využitím nástroje  projectGenerator od openFrameworks. Program má i vývojové prostředí, ze kterého lze spoustit aplikaci. V přiloženém souboru bakalářské práce README.txt je uveden postup pro generátor pomocí příkazové řádky.
+Následné algoritmy byly testovány na kameře Kinect v2 s využitím nástroje  projectGenerator od openFrameworks. Program má i vývojové prostředí, ze kterého lze spoustit aplikaci. V přiloženém souboru bakalářské práce README.txt je uveden postup pro spuštění programu pomocí generátoru v příkazové řádce.
 
 \section{Software}
 
-OpenFrameworks ~\cite{1} je open source C++ nástroj pro kreativní programování.\\
+OpenFrameworks~\cite{1} je open source C++ nástroj pro kreativní programování.\\
 Využívá doplněk ofxKinectV2~\cite{2}. Oproti zabudovanému ofxKinect je optimalizovaný pro aktuální openFrameworks (verze 0.9.0), je stabilnější, rychlejší a podporuje pro případné potřeby i více kamer.
 
-Kód v openFrameworks se dělí do třech hlavních částí. Jedná se o funkce setup(), update() a draw(). Sekce setup slouží pro počáteční nastavení programu, proměnných apod., update obsahuje výpočetní a aktualizační část a draw má na starosti vykreslování.
+Kód v openFrameworks se dělí do třech hlavních částí. Jedná se o funkce \textit{setup}(), \textit{update}() a \textit{draw}(). Sekce \textit{setup} slouží pro počáteční nastavení programu, proměnných apod., \textit{update} obsahuje výpočetní a aktualizační část a \textit{draw} má na starosti vykreslování.
 
-Program se snaží vykonávat všechny části tak často, jak to lze. V \textit{update} i \textit{draw} se může využít funkce ofGetElapsedTimef(), která vrací vteřiny v desetinné přesnosti od spuštění programu nebo ofGetElapsedTimeMilis(), která vrací milisekundy od resetování čítače. Jelikož lze předpokládat, že člověk nemění gesta rychleji, než je počítač zpracovává, tak můžeme využít funkci modulo (i jiných) a ovlivnit jak často se bude vykonávat každá aktualizační část nebo její podčást. Funkce isFrameNew(), která vrací binární hodnotu určující, jestli se snímek změnil či nikoliv, omezuje počet snímků, které jsou následně zpracovány, aby se neprováděly výpočty opakovaně.
+Program se snaží vykonávat všechny části tak často, jak to lze. V \textit{update} i \textit{draw} se může využít funkce \textit{ofGetElapsedTimef}(), která vrací vteřiny v desetinné přesnosti od spuštění programu nebo \textit{ofGetElapsedTimeMilis}(), která vrací čas od resetování čítače. Jelikož lze předpokládat, že člověk nemění gesta rychleji, než je počítač zpracovává, tak můžeme využít funkci \textit{modulo} (i jiných) a ovlivnit jak často se budou vykonávat \textit{update} a \textit{draw} nebo jejich podčásti. Funkce \textit{isFrameNew}(), která vrací binární hodnotu určující, jestli se snímek změnil či nikoliv, omezuje počet snímků, které jsou následně zpracovány, aby se neprováděly výpočty opakovaně.
 
 % %\subsection{Měření času v OF}
 %timeStart = ofGetElapsedTimef();
@@ -20,13 +20,13 @@ Program se snaží vykonávat všechny části tak často, jak to lze. V \textit
 
 K implementaci této práce byla využita kamera Kinect v2. Zdroje, ze kterých lze data využít k potřebám aplikace jsou RGB kamera s rozlišením 1920 x 1080 pixelů a kamera na snímání hloubky s rozlišením 512 x 424 pixelů.
 
-Jedná se o relativně levnou a dostupnou kameru, která se v době zpracování této práce (začátek roku 2018) dala pořídit do tří tisíc korun.
+Jedná se o relativně levnou a dostupnou kameru, jejíž cena se v době zpracování této práce (začátek roku 2018) pohybovala do tří tisíc korun.
 
 \subsection{Výstupy z kamery}
 
 Obě kamery poskytují užitečné informace pro účely projektu. RGB kamera nabízí pole pixelů, kde každý má složky RGB s hodnotami v intervalu 0 až 255. Lze využít v kombinaci s robustním programem, který by na základě barvy, tvarů a dalších vylučovacích prvků správně detekoval nejdříve ruku a poté i gesta. % Jedná se však o znatelně náročnější způsob.
 
-Hloubková kamera poskytuje pole s hodnotami 0 až 255 na základě vzdálenosti objektu od kamery. Stupnice hodnot je klesající, to jest nejbližší objekty mají hodnotu 255. Ve vzdálenosti 3 metry hodnoty klesnou na 150. 
+Hloubková kamera poskytuje pole s hodnotami 0 až 255 na základě vzdálenosti objektu od kamery. Stupnice hodnot je klesající, to jest nejbližší objekty mají hodnotu 255. Ve vzdálenosti 3\,metry hodnoty klesnou na 150. 
 
 \begin{figure}[htp]
 \centering
@@ -36,19 +36,20 @@ Hloubková kamera poskytuje pole s hodnotami 0 až 255 na základě vzdálenosti
 \label{pic9}
 \end{figure}
 
-Minimální vzdálenost pro správné měření vzdálenosti je 0.5 m a maximální 4.5 m. Při větší vzdálenosti bude Kinect stále ještě detekovat objekty v zorném poli, ale bude poskytovat nepřesná data. Velký vliv má i rozlišení, které je pro velké vzdálenosti nedostačující. V dálce 5 m od kamery je rozlišení 7 cm.\\
+Minimální vzdálenost pro správné měření vzdálenosti je 0.5\,m a maximální 4.5\,m. Při větší vzdálenosti bude Kinect stále ještě detekovat objekty v zorném poli, ale bude poskytovat nepřesná data. Velký vliv má i hloubkové rozlišení, které je pro velké vzdálenosti nedostačující. V dálce 5\,m od kamery je rozlišení 7\,cm.\\
 
-Měřené vlastnosti prostředí, které lze využít je vzdálenost od kamery, vzdálenost mezi jednotlivými pixely, úhly a barvy pixelů. V této bakalářské práci je kladen důraz na vzdálenosti.
+Měřené vlastnosti prostředí, které lze využít jsou vzdálenost od kamery, vzdálenost mezi jednotlivými pixely, úhly a barvy pixelů. V této bakalářské práci je kladen důraz na vzdálenosti.
 
 \subsubsection{RGB video}
 Výstupem z RGB kamery je dvoudimenzonální pole se třemi hodnotami jednotlivých barevných složek. Zpracování obrazu z RGB videa nebude v této práci využito. \\
 
 \subsubsection{Hloubkové video}
-Zpracování hodnot z hloubkové kamery je jednodušší, už jenom protože se jedná o jednodimenzionální pole s hodnotou, která reprezentuje vzdálenost. Prahování (tresholding) se pak provádí jednoduchým porovnáním hodnot a vytvoření binárního obrazu je rychlejší, než komplikované rozhodovací funkce u barevného obrazu.
+Zpracování hodnot z hloubkové kamery je jednodušší, protože se jedná o jednodimenzionální pole s hodnotou, která reprezentuje vzdálenost. Prahování (tresholding) se pak provádí jednoduchým porovnáním hodnot a vytvoření binárního obrazu je rychlejší, než komplikované rozhodovací funkce u barevného obrazu.
 
 Nedostatky vyplývající z využití pouze hloubkové kamery spočívají především v tom, že pokud je v záběru objekt, který má podobnou stavbu a strukturu jako je ruka, tak je mylně detekován a zpracováván.\\
 
-Doporučený postup by měl sestávat ze čtyř částí:
+\section{Postup}
+Doporučený postup zpracování by měl sestávat ze čtyř částí:
 
 \begin{enumerate}
 \item úvodní nastavení,
@@ -63,9 +64,9 @@ Uživateli aplikace je potřeba dát na vědomí podmínky interakce. V praktick
 \subsubsection{Nalezení ruky}
 V této části je prostor pro určení podmínek a způsobu vyhledávání ruky. Je vhodné nejdříve vyplnit díry vzniklé šumem v obraze a zahrnout další chyby hardwaru a vlivy okolí. Pokud má být aplikace využívaná v náročnějším okolí, musí obsahovat i vyloučení veškerých nevyhovujícíh objektů, jako jsou objekty podobného tvaru či cizí ruce. Při využívání pouze vzdáleností a úhlů jednotlivých pixelů se obtížně zahrnují všechny možnosti a způsoby provedení gesta. Jelikož mají lidé různé proporce a tvar rukou, to co je pro jednoho obvyklé rozpoložení ruky, může kazit správnou detekci ruky jiného jedince.
 
-Předpoklad pro následující text je vytvoření binárního obrazu z originálního vstupu pomocí prahování. Chybné pixely vzniklé šumem už by měly být eliminovány. Zároveň platí, že čím více podmínek se uživateli na začátku předloží, tím jednodušší je nalezení ruky. %poslední věta má zůstat?? přeformulovat?
+Předpoklad pro následující text je vytvoření binárního obrazu z originálního vstupu prahováním. Chybné pixely vzniklé šumem už by měly být eliminovány. Zároveň platí, že čím více podmínek se uživateli na začátku předloží, tím jednodušší je nalezení ruky. %poslední věta má zůstat?? přeformulovat?
 
-U správně ukazovaného gesta lze předpokládat stejnou vzdálenost jednotlivých bodů od kamery. Mírné odchylky se dají buď zahrnout tolerancí, který rozdíly v určitém rozmezí bude považovat za ekvivalentní. nebo vyloučit úplně, jelikož se dá předpokládat, že to nebude mít vliv na zpracování, pokud se jedná o krajní body. Aby byl program uživatelsky přívětivý, v programu je zvolena tolerance na zachycení těchto rozdílů ve vzdálenosti.
+U správně ukazovaného gesta lze předpokládat stejnou vzdálenost jednotlivých bodů ruky od kamery. Mírné odchylky se dají buď zahrnout tolerancí, který rozdíly v určitém rozmezí bude považovat za ekvivalentní. nebo vyloučit úplně, jelikož se dá předpokládat, že to nebude mít vliv na zpracování, pokud se jedná o krajní body. Aby byl program uživatelsky přívětivý, v programu je zvolena tolerance na zachycení těchto rozdílů v načítaných hodnotách.
 
 V bakalářské práci se vychází z předem definované vzdálenosti, ve které je nalezen největší možný čtverec, který by představoval dlaň. Vyhledává se největší čtverec v binárním obraze, jelikož z ruky představuje jednoznačně dlaň. Pro účely nalezení musí existovat pole pixelů, které by reprezentovalo dlaň, či případně podobný objekt, který by se následně vyloučil podle dalších kritérií. Nadále je dlaň definovaná středem nalezeného čtverce a jeho šířkou.
 
@@ -85,7 +86,7 @@ Sofistikovanější programy využívají tvorbu skeletonu pro sledování a ide
 \end{figure}
 
 \subsubsection{Identifikace gesta}
-Gesta se dělí na statická a dynmaická. Pro dynamická gesta je třeba udržovat si v paměti minulé stavy a stanovit dobu, po kterou by bylo přijatelné pro uživatele provádět gesto a zároveň  nemohlo být mylně identifikované. Nejjednodušší je identifikovat gesta statická, kde s využitím euklidovských vzdáleností lze vypočítat počet prstů, a tak v základní verzi bude prostor pro minimálně pět variant, pokud se pro zjednodušení vyloučí zavřená pěst. Program s implementovanou identifikací jednotlivých prstů poskytuje více variant, než by bylo potřeba, nebo by bylo zapamatovatelné pro uživatele.
+Gesta lze rozlišovat na statická a dynamická. Pro dynamická gesta je třeba udržovat si v paměti minulé stavy a stanovit dobu, po kterou by bylo přijatelné pro uživatele provádět gesto a zároveň  nemohlo být mylně identifikované. Nejjednodušší je identifikovat gesta statická, kde s využitím euklidovských vzdáleností lze vypočítat počet prstů, a tak v základní verzi bude prostor pro minimálně pět variant, pokud se pro zjednodušení vyloučí zavřená pěst. Program s implementovanou identifikací jednotlivých prstů poskytuje více variant, než by bylo potřeba, nebo by bylo zapamatovatelné pro uživatele.
 
 Počet prstů lze spočítat po správné identifikaci jednotlivých prstů, a jedná se o nejjednodušší způsob klasifikace gesta. Pro přesnost se lze opřít i o úhly a vzdálenosti mezi středem dlaně a špičkami prstů podle vzorců uvedených v kapitole 2.1.4 u obrázku~\ref{pic8}.
 
@@ -94,11 +95,11 @@ Sledováním polohy dlaně v následných snímcích lze detekování gesta zefe
 Otázkou je i jak je definováno gesto. Jedná-li se o číslo, které představuje počet vztyčených prstů, je to nejjednodušší. Může to být ale i objekt, který obsahuje pět prstů, z nichž každý může být zvednutý nebo nikoliv. Pak je podstatně přehlednější implementace více než pěti gest. Identifikace je ale náročnější, jelikož každý nalezený prst se musí nejdříve identifikovat, poté aktualizovat objekt představující ruku před kamerou a porovnat s implementovanými gesty. 
 
 \subsubsection{Vykreslení ruky}
-Objekty se přes video vykreslují pomocí FBO ("frame buffer object"). Jedná se o buffery s objekty, které je třeba vykreslit. Reprezentují plátno, na které se příkazy 'begin()' a 'end()' vykreslují 3D objekty a jednou za snímek či méně často (podle požadavků) se vykreslí příkazem 'draw()'. Pro lepší přehled se mohou jednotlivé prsty (konečky prstů) zvýraznit koulí, zatímco celá ruka krychlí. Vykreslují se pouze základní objekty, které upřesňují nalezenou pozici rukou a prstů, aby nebylo potřeba udržovat v paměti přesné okraje ruky, které nejsou pro detekci gesta potřeba.
+Objekty se přes video vykreslují pomocí FBO ("frame buffer object"). Jedná se o buffery s objekty, které je třeba vykreslit. Reprezentují plátno, na které se příkazy \textit{begin}() a \textit{end}() vykreslují 3D objekty a jednou za snímek či méně často (podle požadavků) se vykreslí příkazem \textit{draw}(). Pro lepší přehled se mohou jednotlivé prsty (konečky prstů) zvýraznit koulí, zatímco celá ruka krychlí. Vykreslují se pouze základní objekty, které upřesňují nalezenou pozici rukou a prstů, aby nebylo potřeba udržovat v paměti přesné okraje ruky, které nejsou pro detekci gesta potřeba.
 
-\section{Předzpracování}
+\section{Předzpracování obrazu}
 
-Kvůli přehlednější práci s matematickými parametry obrazu se nejdříve načtou data z kamery, která jsou uloženo v jednodimenzionálním poli a transformují se do dvoudimenzionálního pole pro další zpracování. Přepis je potřeba kvůli práci se souřadnicemi.\\
+Kvůli přehlednější práci s matematickými parametry obrazu se nejdříve načtou data z kamery, která jsou uložena v jednodimenzionálním poli a transformují se do dvoudimenzionálního pole pro další zpracování. Přepis je potřeba kvůli práci se souřadnicemi.\\
 
 \subsection{Filtrace}
 Chybné hodnoty načtené z kamery je potřeba nejdříve co nejvíce eliminovat. Za tímto účelem je použit medián z okolí.\\
@@ -123,8 +124,8 @@ Velikost okolí je zvolena empericky. Čím větší okolí, tím více je výsl
 \subsection{Prahování}
 Pro manipulaci s nalezenými tvary a výpočty mezi jednotlivými body je snazší pracovat s binárním obrazem. Nejdříve se obraz projde a najde nejbližší objekt (maximální hodnota). Díky předchozí filtraci nezkreslí tuto hodnotu žádný špatně detekovaný pixel, který by měl větší hodnotu. Následně se již porovná každý jednotlivý pixel s hodnotou a vytvoří se pole s hodnotami 1 a 0.
 
-Jelikož lze předpokládat, že člověk nebude mít vždy ruku striktně kolmo k pohledu kamery, je záhodno odečíst od hodnoty představující vzdálenost ruky toleranci. Výsledná hodnota tedy záleží na tom, zda původní pixel byl blíže, než nejbližší objekt s ohledem na odchylku.\\
-Na obrázcích~\ref{pic12},~\ref{pic13} a~\ref{pic14} lze pozorovat změny s ohledem na různé tolerance naklonění ruky. S odchylkou 10 je vidět, že kus dlaně chybí, při odchylce 15 je s rukou načtený i znatelný kus předloktí a k tomu i nejednotný kus jiného objektu. Při toleranci pouze 12 je stále detekováno mnoho pixelů a tak je zvolena 10 jako nejlepší tolerance.\\
+Jelikož lze předpokládat, že člověk nebude mít vždy ruku striktně kolmo k pohledu kamery, je záhodno odečíst od hodnoty představující vzdálenost ruky toleranci. Výsledná hodnota tedy záleží na tom, zda původní pixel byl blíže, než nejbližší objekt s ohledem na odchylku. Tolerance není závislá na vzdálenosti ruky od kamery.\\
+Na obrázcích~\ref{pic12},~\ref{pic13} a~\ref{pic14} lze pozorovat změny s ohledem na různé tolerance naklonění ruky. S tolerancí 10 je vidět, že kus dlaně chybí, při toleranci 15 je s rukou načtený i znatelný kus předloktí a k tomu i nejednotný kus jiného objektu. Při toleranci pouze 12 je stále detekováno mnoho pixelů a tak je zvolena 10 jako nejlepší tolerance.\\
 
 \begin{figure}[htp]
 \centering
@@ -152,7 +153,7 @@ Na obrázcích~\ref{pic12},~\ref{pic13} a~\ref{pic14} lze pozorovat změny s ohl
 \end{figure}
 \newpage
 \section{Detekce ruky}
-Definujeme-li ruku jako nejbližší objekt, pak je nalezena již při prahování. Pro lepší názornost se ukládá umístění objektu pomocí pole souřadnic. Pole má počet nalezených pixelů, které patří objektu. V programu je vizualizován pomocí červeného čtverce, který má střed v zprůměrovaných souřadnicích (Xavg, Yavg) a velikost odvozenou od velikosti pole. 
+Definujeme-li ruku jako nejbližší objekt, pak je nalezena již při prahování. Pro lepší názornost se ukládá umístění objektu pomocí pole souřadnic pixelů. Pole obsahuje nalezené pixelů, které patří objektu. V programu je vizualizován červeným čtvercem, který má velikost odvozenou od velikosti pole a střed v souřadnicích $ X_{avg}, Y_{avg} $, které jsou vypočteny jako průměr ze všech souřadnic pixelů, které patří objektu. 
 Na následujících obrázcích je vidět rozdíl mezi vyhledáváním v originálních datech a nebere v potaz chybné hodnoty a vyhledáváním v binárním obraze s vyfiltrovaným šumem.
 \begin{figure}[htp]
 \centering
@@ -167,7 +168,7 @@ Na následujících obrázcích je vidět rozdíl mezi vyhledáváním v origin�
 \label{pic16}
 \end{figure}
 
-Již z obrázků~\ref{pic15} a~\ref{pic16} lze poznat, že vyhledávání ve filtrovaných datech je přesnější.
+Z obrázků~\ref{pic15} a~\ref{pic16} lze poznat, že vyhledávání ve filtrovaných datech je přesnější.
 \newpage
 \section{Detekce dlaně}
 V binárním obraze se vyhledá největší plný čtverec, který lze považovat za dlaň. Vytvoří se pomocná matice, do které se zapíší krajové hodnoty binárního obrazu a poté se binární pole prochází z levého horního rohu. Pokud je na dané pozici binárního obrazu nula, přepíše se i do matice. Pokud je tam ale jedna, pak se nalezne minimum třech sousedů z levého horního rohu. To znamená minimum z horního, levého a šikmo horního nalevo. K minumu se přičte jednička, čímž se zvětší velikost čtvercové matice. Ve výsledku tak největší číslo, které je nalezené v pomocné matici, představuje pravý dolní roh největší nalezené matice a zároveň její velikost~\cite{23}. Pro lepší práci v budoucnu je dlaň uložená jako středový bod a velikost matice.
@@ -186,7 +187,7 @@ V binárním obraze se vyhledá největší plný čtverec, který lze považova
 \label{pic17}
 \end{figure}
 
-Detekce dlaně je vyznačena zeleným čtvercem, jenž má velikost nalezené jednotkové matice a jeho střed má souřadnice Xc, Yc, které budou následně využívány jako střed dlaně.
+Detekce dlaně je vyznačena zeleným čtvercem, jenž má velikost nalezené jednotkové matice a jeho střed má souřadnice $ X_{c}, Y_{c} $, které budou následně využívány jako střed dlaně.
 
 \begin{figure}[htp]
 \centering
@@ -203,7 +204,7 @@ Po nalezení předpokládaného umístění dlaně se celá oblast označí jako
 V aplikaci je implentováno několik způsobů nalezení prstů. Pouze některé jsou efektivní a použity ve finální verzi programu, ale pro různost postupu jsou zde uvedeny. Pro všechny byly použity předchozí úpravy obrazu a detekce směru prstů.
 
 \subsection{Detekce směru prstů}
-Za předpokladu, že jsou prsty nezaměnitelně hubenější, než předloktí, lze okolo dlaně ve vzdálenosti $ offset\_palm $ od okraje vést čáru ve všech čtyřech směrech (viz obrázek~ref{pic19}). Následně se iteruje podél čáry v každém směru a detekují změny v binárním obraze. Pokud jednotlivý nalezený objekt má šířku větší než je třetina šířky dlaně, jedná se o část předloktí a nezapočítává se. Zbylé objekty se zaznamenávají do počtu předpokládanách prstů.  Pro přesnější detekci se daný algoritmus provede ještě jednou pro větší vzdálenost od dlaně. Pokud je pro obě vzdálenosti počet detekovaných prstů větší, než nula, je daný směr zaznamenán. Jelikož je potřeba znát i pozici palce, ukládají se dva směry prstů.
+Za předpokladu, že jsou prsty nezaměnitelně užší, než předloktí, lze okolo dlaně ve vzdálenosti $ offset\_palm $ od okraje vést čáru ve všech čtyřech směrech (viz obrázek~\ref{pic19}). Následně se iteruje podél jedné hodnoty souřadnice (pro horizontální směr se jedná o souřadnici \textit{y}) v každém směru a detekují změny v binárním obraze. Pokud jednotlivý nalezený objekt má šířku větší než je třetina šířky dlaně, jedná se o část předloktí a nezapočítává se. Zbylé objekty se zaznamenávají do počtu předpokládanách prstů.  Pro přesnější detekci se daný algoritmus provede ještě jednou pro větší vzdálenost od dlaně. Pokud je pro obě vzdálenosti počet detekovaných prstů větší, než nula, je daný směr zaznamenán. Jelikož je potřeba znát i pozici palce, ukládají se dva směry prstů.
 
 Empiricky nalezená nejlepší hodnota pro $ offset\_palm $ je $ \frac{5}{7} $ šířky dlaně, v druhém kole je zvolena dvojnásobná hodnota. 
 
@@ -245,7 +246,7 @@ Další implementovaná možnost nalezení konců prstů spočívá v procházen
 \subsection{Identifikace prstů}
 Index prstu se přidělí podle pozice špičky prstů vzhledem ke středu dlaně viz obrázek~\ref{pic20}. Jelikož není známo, jakým směrem je ruka natočena ke kameře, není identifikovatelné, jestli se jedná o malíček nebo ukazováček. Indexy tedy představují pouze pozici prstu.
 
-\section{Statistika}
+\section{Vyhodnocení výsledků detekce gest}
 Vyhodnocení funkčnosti a použitelnosti navržených metod.
 TODO
 
