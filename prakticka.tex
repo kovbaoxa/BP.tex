@@ -249,7 +249,7 @@ Index prstu se přidělí podle pozice špičky prstů vzhledem ke středu dlan�
 \section{Vyhodnocení výsledků detekce gest}
 %Vyhodnocení funkčnosti a použitelnosti navržených metod.
 
-Gesto je definováno počtem ukazujících prstů. Gesto nezávisí na směru prstů a je schopno detekovat gesta i šikmá. Množina gest obsahuje jeden až pět natažených prstů. Gesta jsou statická a historie se neukládá. Přesnost správné klasifikace se pohybuje mezi 30\,\% a 35\,\% pro definovaná gesta. Nepřítomnost gesta je detekována na 99\,\%. Vynecháním absence gesta z měření se přesnost zlepšuje až na 53\,\%.
+Gesto je definováno počtem ukazovaných prstů. Gesto nezávisí na směru prstů a je schopno detekovat gesta i šikmá. Množina gest obsahuje jeden až pět natažených prstů. Gesta jsou statická a historie se neukládá. Přesnost správné klasifikace se pohybuje mezi 30\,\% a 35\,\% pro definovaná gesta. Pokud gesto není přítomno, je to detekováno se spolehlivostí 99\,\%. Pokud lze tolerovat nenalezení gesta na jednom snímku, a stačí, když bude identifikováno na snímku dalším, zlepšuje se přesnost až na 53\,\%.
 
 Optimální vzdálenost pro správnou identifikaci gesta je mezi 0.5\,m a 1\,m.
 
@@ -257,17 +257,17 @@ Matice chybných detekcí včetně chybně detekované absence matice je zobraze
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.5\linewidth]{confusion_incl.eps}
-\caption{Na svislé ose je identifikátor gesta, které kamera ve skutečnosti vidí. Na vodorovné ose je gesto, které bylo detekováno. Poslední sloupec představuje přesnost detekce. }
+\caption{Tabulka přesností včetně detekce nepřítomnosti gesta. Na svislé ose je identifikátor gesta, které kamera ve skutečnosti vidí. Na vodorovné ose je gesto, které bylo detekováno. Poslední sloupec představuje přesnost detekce. }
 \label{pic21}
-\end{figure}.
+\end{figure}
 
 Pokud je chybně detekovaná nepřítomnost gesta menším problémem, než špatně detekované jiné gesto, platí matice chybovosti na obrázku~\ref{pic22}.
 \begin{figure}[htp]
 \centering
 \includegraphics[width=0.5\linewidth]{confusion_excl.eps}
-\caption{Na svislé ose je identifikátor gesta, které kamera ve skutečnosti vidí. Na vodorovné ose je gesto, které bylo detekováno. Poslední sloupec představuje přesnost detekce.}
+\caption{Tabulka přesností pouze identifikovaných gest. Na svislé ose je identifikátor gesta, které kamera ve skutečnosti vidí. Na vodorovné ose je gesto, které bylo detekováno. Poslední sloupec představuje přesnost detekce.}
 \label{pic22}
-\end{figure}.
+\end{figure}
 
 
 
