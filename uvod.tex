@@ -1,16 +1,14 @@
 \chapter{Úvod}
 %-full-textové vyhldávání (key-words?)
 %seznámení s problematikou - současná situace, motivace
-V dnešní době robotizace, kdy lidé přicházejí na výhody využívání inteligentních zařízení, je snaha rozšířit jejich využití co nejvíce. Ovládání gesty značně pomůže intuitivnímu řízení robotů a usnadní jejich využití.
-Z pohledu spolupráce běžného uživatele s robotem se řadí řízení zařízení za pomoci kamery mezi nejjednodušší způsoby, jelikož kamery jsou relativně levné a dostupné. Není k tomu potřeba nic jiného, než co většina populace (alespoň cílové skupiny - lidí používajívící počítače) už má. Jedná se o jednodušší variantu i s ohledem na implementační čas.
+V dnešní době robotizace, kdy lidé přicházejí na výhody využívání inteligentních zařízení, je snaha rozšířit jejich využití co nejvíce. Ovládání gesty značně pomůže intuitivnímu řízení robotů a usnadní jejich využití. Z pohledu spolupráce běžného uživatele s robotem se řadí řízení zařízení za pomoci kamery mezi nejjednodušší způsoby, jelikož kamery jsou relativně levné a dostupné. Není k tomu potřeba nic jiného, než co většina populace (alespoň cílové skupiny - lidí používající počítače) už má. Mnoho podobných aplikací již existuje, nebo se zaměřuje na jednotlivé podčásti, z nichž ale velká část vyžaduje složitou instalaci a konfiguraci programů. Velké množství ani nepodporuje zpracování s malou časovou odezvou, jsou výpočetně složité a časově náročné. Téma se mi zdá být zajímavé, protože v něm vidím budoucnost a věřím, že se rozšíří užívání hlavně v rozvinutých společnostech.
 
-Mnoho podobných aplikací již existuje, nebo se zaměřuje na jednotlivé podčásti, často ale vyžadují složitou instalaci a konfiguraci programů. Velké množstí pak ani nepodporuje zpracování s malou časovou odezvou a jsou výpočetně složité a časové náročné.
 %cíle BP
-Jelikož má být výsledný algoritmus použitelný pro robota, který  bude  následovat člověka, musí splňovat několik požadavků. Jedná se o systém reálného času a tam musí být odezva dostatečně malá s ohledem na člověka. Zvolená gesta musí být intuitivní a snadno proveditelná. 		%další požadavky 
+Cílem bakalářské práce je implementovat algortimy na rozpoznávání gest, kterými bude člověk řídit robota. Jelikož má být výsledný algoritmus použitelný pro robota, který  bude  následovat člověka, musí splňovat několik požadavků. Jedná se o systém reálného času, jeho odezva musí být tedy dostatečně malá s ohledem na člověka. Zvolená gesta musí být intuitivní a snadno proveditelná. 		%další požadavky 
 
 %odůvodnění proč a jak
-Následně zvolené přístupy v této práci jsou psány tak, aby měly co nejmenší odezvu. 
-V aktuálních aplikacích se obvykle využívají strojově naučené algoritmy. Pro snazší dosáhnutí rychlejšího zpracování obrazu, které vyhovuje požadavkům, lze využít vlastností obrazu, jako jsou vzdálenosti a úhly k rozpoznávání ruky.
-%popsání logického členění BP
+Následně zvolené přístupy jsou v této práci jsou implementovány tak, aby měly co nejmenší odezvu. Využívají se vlastnosti obrazu, jako jsou vzdálenosti a úhly k rozpoznávání ruky.
 
+%popsání logického členění BP
+Práce je členěna na rešerši aktuálních metod zpracování obrazu, detekce lidí a částí těl. Dále se věnuji aplikacím, ve kterých jsou již rozpoznávání a kamera Kinect využívány, i těm, u kerých je potenciál k využití v budoucnu. Součástí práce je implementace programu na rozpoznávání gest a popis použitých algoritmů.
 \endinput

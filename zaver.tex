@@ -1,13 +1,13 @@
 \chapter{Závěr}
-Vybraný postup implementace zaručil určité výhody oproti jiným algoritmům, které jsou zmíněné v kapitole ~\ref{rozpoznavani} . Mezi hlavní výhody patří, že není potřeba žádné jiné příslušenství, než je kamera. Člověk ovládající robota nemusí  být oproti žádnému konkrétnímu pozadí, nemusí mít na rukou rukavice nebo mít jiné specifické náležitosti. Úvodní kalibrace také není nutná. 
+Vybraný postup implementace zaručil určité výhody oproti jiným algoritmům, které jsou zmíněné v kapitole~\ref{rozpoznavani} . Mezi hlavní výhody patří, že není potřeba žádné jiné příslušenství, než je kamera. Člověk ovládající robota nemusí stát před žádnám konkrétním pozadím, nemusí mít na rukou rukavice nebo mít jiné specifické náležitosti. Úvodní kalibrace také není nutná. 
 
 %možnosti budoucího využití
-Jelikož je rozpoznávání vykonáváno v binárním obraze, je možná kombinace více programů nebo metod relativně jednoduchá. Zároveň lze program použít i s jinými hloubkovými kamerami. Pokud se algoritmus zkombinuje s využíváním obrazu z barevné kamery, lze detekci provádět spolehlivěji.
-Do programu lze také přidat nová gesta, odstranit stávající nebo změnit celkový pohled, na základě kterého se definují gesta. To lze udělat z pohledu přesnějšího rozpoznávání, tak i z pohledu, jak se jednotlivá gesta uvažují (počet prstů versus konkrétní prsty). 
+Jelikož je rozpoznávání vykonáváno v binárním obraze, zaručuje to jednoduchou kombinace více programů nebo rozpoznávacích algoritmů. Zároveň lze program použít i s jinými hloubkovými kamerami. Pokud se algoritmus zkombinuje s využíváním obrazu z barevné kamery (například vyhledávní ruky podle barvy), lze detekci provádět spolehlivěji.
+Do programu lze také přidat nová gesta, odstranit stávající nebo změnit celkový pohled, na základě kterého se definují gesta. To lze udělat jak z pohledu přesnějšího rozpoznávání, tak i z pohledu, jak se jednotlivá gesta uvažují (počet prstů, pořadí konkrétních prsty nebo komplikovanější gesta). 
+
 %zhodnocení výsledků
 %odůvodnění proč a jak
-
-TODO zhodnocení výsledků - statistiky
+Množina gest je definována pouze počtem natažených prstů a přesnost identifikace se u jednotlivých gest liší.Přesnost identifikace se pohybuje mezi 30\,\% a 35\,\%, přičem lze při použití programu ošetřit absenci gesta. To zvýší přesnost identifikace na 30\,\% až 53\,\%. Absence gesta je detekována na 99\,\%.
 
 
 \endinput
